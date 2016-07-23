@@ -48,6 +48,7 @@ class GroupMan implements GroupManager {
 	@Override
 	public boolean removeGroup(String name) {
 		Events.callEvent(new GroupRemoveEvent(name));
+		Manager.getGroups().removeSection(name);
 		return groups.removeIf(permGroup -> permGroup.getName().equalsIgnoreCase(name));
 	}
 

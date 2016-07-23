@@ -3,7 +3,6 @@ package com.ssplugins.ssperm.util;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Settings;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,10 @@ public class Util {
 	
 	public static String color(String input) {
 		return ChatColor.translateAlternateColorCodes('&', input);
+	}
+	
+	public static String discolor(String input) {
+		return ChatColor.stripColor(color(input));
 	}
 	
 	public static String notNull(String input) {
