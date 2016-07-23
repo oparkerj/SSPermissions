@@ -43,6 +43,7 @@ class Manager implements SSPermAPI {
 	}
 	
 	static Config getPlayer(String id) {
+		//Config config = new Config(SSPerm.get(), new File(SSPerm.get().getDataFolder(), "players/" + id + ".yml"));
 		Config config = new Config(SSPerm.get(), new File(SSPerm.get().getDataFolder().getAbsolutePath() + "/players", id + ".yml"));
 		config.generateFile();
 		return config;

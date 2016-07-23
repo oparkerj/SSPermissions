@@ -23,6 +23,10 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 		super.setCallback(this::updateFormat);
 	}
 	
+	void setFormat(String format) {
+		this.format = format;
+	}
+	
 	void updateFormat() {
 		format = manager.getPlayerMan().getChatFormat(player);
 	}

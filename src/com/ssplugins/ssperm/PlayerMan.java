@@ -35,6 +35,19 @@ class PlayerMan implements PlayerManager {
 		return base;
 	}
 	
+	String getChatFormat(SSPlayer player) {
+		String base = Manager.getOptions().getConfig().getString("chatFormat");
+		SSPlayer p = player;
+		Settings playerSettings = p.getSettings();
+		Settings groupSettings = p.getGroup().getSettings();
+		base = Util.replace(base, "<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
+		base = Util.replace(base, "<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
+		base = Util.replace(base, "<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
+		base = Util.replace(base, "<group>", p.getGroup().getName());
+		base = Util.replace(base, "<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
+		return base;
+	}
+	
 	@Override
 	public SSPlayer getPlayer(Player player) {
 		if (players.stream().anyMatch(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString()))) {
@@ -42,7 +55,7 @@ class PlayerMan implements PlayerManager {
 			if (optional.isPresent()) return optional.get();
 		}
 		PermPlayer permPlayer = new PermPlayer(player);
-		permPlayer.updateFormat();
+		permPlayer.setFormat(getChatFormat(permPlayer));
 		players.add(permPlayer);
 		return permPlayer;
 	}

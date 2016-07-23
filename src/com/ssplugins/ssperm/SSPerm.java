@@ -10,6 +10,7 @@ public class SSPerm extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		instance = this;
 		manager = new Manager(this);
 	}
 	
