@@ -32,9 +32,13 @@ class AttMan {
 		return map.get(id);
 	}
 	
+	private boolean value(String perm) {
+		return !perm.startsWith("-");
+	}
+	
 	void setup(Player player) {
 		PermissionAttachment att = player.addAttachment(SSPerm.get());
-		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(s, true));
+		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(s, value(s)));
 		map.put(player.getUniqueId().toString(), att);
 	}
 	
@@ -48,13 +52,13 @@ class AttMan {
 	void playerUpdate(String id, String perm, boolean add) {
 		PermissionAttachment att = get(id);
 		if (att == null) return;
-		if (add) att.setPermission(perm, true);
+		if (add) att.setPermission(perm, value(perm));
 		else att.unsetPermission(perm);
 	}
 	
 	void playerSet(Player player, Group group) {
 		PermissionAttachment att = get(player.getUniqueId().toString());
 		att.getPermissions().forEach((s, set) -> att.unsetPermission(s));
-		group.getAllPermissions().forEach(s -> att.setPermission(s, true));
+		group.getAllPermissions().forEach(s -> att.setPermission(s, value(s)));
 	}
 }
