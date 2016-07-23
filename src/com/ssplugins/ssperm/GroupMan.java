@@ -20,7 +20,7 @@ class GroupMan implements GroupManager {
 	GroupMan() {}
 	
 	void loadGroups() {
-		loadGroup("default");
+		defGroup = new PermGroup("default");
 		Manager.getGroups().getConfig().getConfigurationSection("").getKeys(false).forEach(this::loadGroup);
 	}
 	
