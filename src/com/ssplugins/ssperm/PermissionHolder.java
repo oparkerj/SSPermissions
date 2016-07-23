@@ -28,7 +28,7 @@ abstract class PermissionHolder {
 			public boolean onChange(String key, String oldValue, String newValue) {
 				if (newValue == null) newValue = Util.getConfigNull(key);
 				if (!Util.verify(key, newValue)) return false;
-				config.set(id + "." + key, newValue);
+				config.set(id + ".options." + key, newValue);
 				return true;
 			}
 			

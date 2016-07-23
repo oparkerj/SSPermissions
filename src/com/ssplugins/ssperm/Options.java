@@ -115,22 +115,29 @@ class Options implements Settings {
 	}
 	
 	@Override
-	public boolean setByName(String name, String value) {
+	public void unsafeSet(String name, String value) {
+		if (value.equalsIgnoreCase(Util.getConfigNull(name))) value = null;
 		switch (name) {
 			case "prefix":
-				return setPrefix(value);
+				prefix = value;
+				break;
 			case "suffix":
-				return setSuffix(value);
+				suffix = value;
+				break;
 			case "nameColor":
-				return setNameColor(ChatColor.getByChar(value));
+				nameColor = (value == null ? null : ChatColor.getByChar(value));
+				break;
 			case "nameFormat":
-				return setNameFormat(ChatColor.getByChar(value));
+				nameFormat = (value == null ? null : ChatColor.getByChar(value));
+				break;
 			case "chatColor":
-				return setChatColor(ChatColor.getByChar(value));
+				chatColor = (value == null ? null : ChatColor.getByChar(value));
+				break;
 			case "chatFormat":
-				return setChatFormat(ChatColor.getByChar(value));
+				chatFormat = (value == null ? null : ChatColor.getByChar(value));
+				break;
 			default:
-				return false;
+				break;
 		}
 	}
 }

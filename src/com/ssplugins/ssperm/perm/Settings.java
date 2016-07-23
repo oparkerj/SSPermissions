@@ -32,7 +32,7 @@ public interface Settings {
 	
 	boolean setChatFormat(ChatColor format);
 	
-	boolean setByName(String name, String value);
+	void unsafeSet(String name, String value);
 	
 	static List<String> getAllOptions() {
 		List<String> list = new ArrayList<>();
@@ -52,6 +52,8 @@ public interface Settings {
 	}
 	
 	static String pick(String name, ChatColor player, ChatColor group) {
+		if (player == null) player = ChatColor.getByChar(Util.getConfigNull(name));
+		if (group == null) group = ChatColor.getByChar(Util.getConfigNull(name));
 		return ChatColor.COLOR_CHAR + pick(name, Util.notNull(player), Util.notNull(group));
 	}
 

@@ -22,7 +22,7 @@ class AttMan {
 		map.keySet().forEach(this::remove);
 	}
 	
-	private void remove(String id) {
+	void remove(String id) {
 		PermissionAttachment att = map.get(id);
 		if (att != null) att.remove();
 		map.remove(id);

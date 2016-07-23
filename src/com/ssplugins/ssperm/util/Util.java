@@ -3,6 +3,7 @@ package com.ssplugins.ssperm.util;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Settings;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +60,9 @@ public class Util {
 	public static boolean verify(String key, String value) {
 		switch (key) {
 			case "nameColor":
-				return ChatColor.getByChar(value).isColor();
-			case "nameFormat":
-				return ChatColor.getByChar(value).isFormat();
 			case "chatColor":
 				return ChatColor.getByChar(value).isColor();
+			case "nameFormat":
 			case "chatFormat":
 				return ChatColor.getByChar(value).isFormat();
 			default:
@@ -107,8 +106,8 @@ public class Util {
 	}
 	
 	public static void defaultOptions(Config config) {
-		config.setValue("chatVariables", getChatVars());
 		config.setDefault("chatFormat", "<prefix><player><suffix> &7> <msg>");
+		config.setValue("chatVariables", getChatVars());
 		config.save();
 	}
 	
@@ -134,7 +133,9 @@ public class Util {
 	public static void loadOptions(Settings settings, Config config, String id) {
 		Settings.getAllOptions().forEach(s -> {
 			config.setDefault(id + ".options." + s, getConfigNull(s));
-			settings.setByName(s, config.getConfig().getString(id + ".options." + s));
+			String v = config.getConfig().getString(id + ".options." + s);
+			if (!verify(s, v)) v = getConfigNull(s);
+			settings.unsafeSet(s, color(v));
 		});
 		config.save();
 	}

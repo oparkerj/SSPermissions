@@ -2,6 +2,7 @@ package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.perm.*;
 import com.ssplugins.ssperm.util.Config;
+import com.ssplugins.ssperm.util.Util;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -21,6 +22,7 @@ class Manager implements SSPermAPI {
 		groups = new Config(plugin, "groups.yml");
 		options.generateFile();
 		groups.generateFile();
+		Util.defaultOptions(options);
 		groupMan.loadGroups();
 		Bukkit.getOnlinePlayers().forEach(attMan::setup);
 		plugin.getServer().getPluginManager().registerEvents(new Events(this), plugin);

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 class Events implements Listener {
@@ -30,5 +31,11 @@ class Events implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		manager.getPlayerMan().remove(event.getPlayer());
+		manager.getAttMan().remove(event.getPlayer().getUniqueId().toString());
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		manager.getAttMan().setup(event.getPlayer());
 	}
 }
