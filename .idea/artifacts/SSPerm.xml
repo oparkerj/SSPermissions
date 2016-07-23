@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SSPerm">
+    <output-path>$USER_HOME$/Desktop/servers/testing/plugins</output-path>
+    <root id="archive" name="SSPerm.jar">
+      <element id="module-output" name="PermissionPlugin" />
+      <element id="file-copy" path="$PROJECT_DIR$/plugin.yml" />
+    </root>
+  </artifact>
+</component>
