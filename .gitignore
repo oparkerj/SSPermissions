@@ -1,0 +1,5 @@
+# Custom ignore
+
+/out
+*.iml
+.idea/workspace.xml

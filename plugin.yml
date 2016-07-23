@@ -1,5 +1,5 @@
 name: SSPerm
-main: com.ssplugins.sspermerm
+main: com.ssplugins.ssperm.SSPerm
 version: 1.0.0
 
 author: StarShadow
