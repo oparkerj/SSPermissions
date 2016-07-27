@@ -19,7 +19,7 @@ public interface Group {
 	
 	boolean inherit(Group group);
 	
-	void unInherit(String name);
+	boolean unInherit(String name);
 
 	List<String> getPlayers();
 

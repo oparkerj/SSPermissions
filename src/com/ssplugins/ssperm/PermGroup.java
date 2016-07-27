@@ -2,11 +2,15 @@ package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Permissions;
+import com.ssplugins.ssperm.perm.SSPlayer;
 import com.ssplugins.ssperm.perm.Settings;
 import com.ssplugins.ssperm.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class PermGroup extends PermissionHolder implements Group {
@@ -19,15 +23,49 @@ class PermGroup extends PermissionHolder implements Group {
 		super(true, name);
 		this.name = name;
 		manager = Manager.get();
+		super.setPermissionCallback(this::updatePermission);
+		super.setOptionCallback(this::refreshFormats);
+	}
+	
+	private void updatePermission(String perm, boolean add) {
+		if (name.equalsIgnoreCase("default")) {
+			Bukkit.getOnlinePlayers().forEach(o -> {
+				if (manager.getPlayerManager().getPlayer(o).getGroup().getName().equalsIgnoreCase("default")) {
+					manager.getAttMan().playerUpdate(o.getUniqueId().toString(), perm, add);
+				}
+			});
+			return;
+		}
+		getPlayers().forEach(s -> {
+			Optional<SSPlayer> optional = Manager.get().getPlayerManager().getPlayerById(s);
+			if (optional.isPresent()) {
+				Permissions p = optional.get().getPermissions();
+				if (add) p.add(perm);
+				else p.remove(perm);
+			}
+		});
+	}
+	
+	private void refreshFormats() {
+		getPlayers().forEach(s -> {
+			Optional<SSPlayer> optional = Manager.get().getPlayerManager().getPlayerById(s);
+			if (optional.isPresent()) {
+				optional.get().refreshChatFormat();
+			}
+		});
 	}
 	
 	void removeSilent(Player player) {
 		Util.removeFromList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 	}
+	
+	void prepareToRemove() {
+		Manager.getGroups().removeSection(name + ".players");
+	}
 
 	@Override
 	public String getName() {
-		return name;
+		return Util.color(name);
 	}
 
 	@Override
@@ -49,7 +87,7 @@ class PermGroup extends PermissionHolder implements Group {
 	public boolean addPlayer(Player player) {
 		if (hasPlayer(player)) return false;
 		manager.getGroupMan().resetPlayer(player);
-		Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
+		if (!name.equalsIgnoreCase("default")) Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, this);
 		return true;
 	}
@@ -70,7 +108,7 @@ class PermGroup extends PermissionHolder implements Group {
 	@Override
 	public Set<String> getAllPermissions() {
 		Set<String> perms = getPermissions().getAll();
-		Util.getGroups(this).stream().peek(group -> perms.addAll(group.getPermissions().getAll()));
+		Util.getGroups(this).forEach(group -> perms.addAll(group.getPermissions().getAll()));
 		return perms;
 	}
 	
@@ -89,11 +127,14 @@ class PermGroup extends PermissionHolder implements Group {
 		if (Manager.getGroups().getConfig().getStringList(name + ".inherits").stream().anyMatch(s -> group.getName().equalsIgnoreCase(s))) return false;
 		if (group.getName().equalsIgnoreCase(name)) return false;
 		Util.addToList(Manager.getGroups(), name + ".inherits", group.getName());
+		getPlayers().forEach(s -> manager.getAttMan().playerSet(s, this));
 		return true;
 	}
 	
 	@Override
-	public void unInherit(String name) {
-		Util.removeFromList(Manager.getGroups(), this.name + ".inherits", name);
+	public boolean unInherit(String name) {
+		boolean f = Util.removeFromList(Manager.getGroups(), this.name + ".inherits", name);
+		getPlayers().forEach(s -> manager.getAttMan().playerSet(s, this));
+		return f;
 	}
 }

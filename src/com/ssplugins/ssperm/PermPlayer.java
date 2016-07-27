@@ -20,15 +20,20 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 		super(false, player.getUniqueId().toString());
 		this.player = player;
 		manager = Manager.get();
-		super.setCallback(this::updateFormat);
+		super.setOptionCallback(this::updateFormat);
+		super.setPermissionCallback(this::updatePermission);
 	}
 	
 	void setFormat(String format) {
 		this.format = format;
 	}
 	
-	void updateFormat() {
-		format = manager.getPlayerMan().getChatFormat(player);
+	private void updateFormat() {
+		format = manager.getPlayerMan().getChatFormat(this);
+	}
+	
+	private void updatePermission(String perm, boolean add) {
+		manager.getAttMan().playerUpdate(player.getUniqueId().toString(), perm, add);
 	}
 	
 	@Override
@@ -75,5 +80,10 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	@Override
 	public String getChatFormat() {
 		return format;
+	}
+	
+	@Override
+	public void refreshChatFormat() {
+		updateFormat();
 	}
 }

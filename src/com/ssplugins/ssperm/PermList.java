@@ -71,4 +71,9 @@ class PermList implements Permissions {
 	public Set<String> getAll() {
 		return new HashSet<>(set);
 	}
+	
+	@Override
+	public int length() {
+		return set.size();
+	}
 }

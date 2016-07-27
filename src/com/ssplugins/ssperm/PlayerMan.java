@@ -5,12 +5,10 @@ import com.ssplugins.ssperm.perm.PlayerManager;
 import com.ssplugins.ssperm.perm.SSPlayer;
 import com.ssplugins.ssperm.perm.Settings;
 import com.ssplugins.ssperm.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 class PlayerMan implements PlayerManager {
 	
@@ -27,11 +25,11 @@ class PlayerMan implements PlayerManager {
 		SSPlayer p = getPlayer(player);
 		Settings playerSettings = p.getSettings();
 		Settings groupSettings = p.getGroup().getSettings();
-		base = Util.replace(base, "<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
-		base = Util.replace(base, "<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
-		base = Util.replace(base, "<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
-		base = Util.replace(base, "<group>", p.getGroup().getName());
-		base = Util.replace(base, "<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
+		base = base.replace("<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
+		base = base.replace("<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
+		base = base.replace("<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
+		base = base.replace("<group>", p.getGroup().getName());
+		base = base.replace("<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
 		return base;
 	}
 	
@@ -40,11 +38,11 @@ class PlayerMan implements PlayerManager {
 		base = Util.color(base);
 		Settings playerSettings = player.getSettings();
 		Settings groupSettings = player.getGroup().getSettings();
-		base = Util.replace(base, "<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
-		base = Util.replace(base, "<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
-		base = Util.replace(base, "<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
-		base = Util.replace(base, "<group>", player.getGroup().getName());
-		base = Util.replace(base, "<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
+		base = base.replace("<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
+		base = base.replace("<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
+		base = base.replace("<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
+		base = base.replace("<group>", player.getGroup().getName());
+		base = base.replace("<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
 		return base;
 	}
 	
@@ -58,6 +56,20 @@ class PlayerMan implements PlayerManager {
 		permPlayer.setFormat(getChatFormat(permPlayer));
 		players.add(permPlayer);
 		return permPlayer;
+	}
+	
+	@Override
+	public Optional<SSPlayer> getPlayerById(String id) {
+		Player player = Bukkit.getPlayer(UUID.fromString(id));
+		if (player == null) return Optional.empty();
+		return Optional.of(getPlayer(player));
+	}
+	
+	@Override
+	public Optional<SSPlayer> getPlayerByName(String name) {
+		Player player = Bukkit.getPlayer(name);
+		if (player == null) return Optional.empty();
+		return Optional.of(getPlayer(player));
 	}
 	
 	@Override

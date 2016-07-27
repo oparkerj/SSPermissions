@@ -3,11 +3,13 @@ package com.ssplugins.ssperm.util;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Settings;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Util {
 	
@@ -17,15 +19,13 @@ public class Util {
 		return "{none}";
 	}
 	
-	public static String replace(String base, String key, String value) {
-		return base.replaceAll(Pattern.quote(key), Matcher.quoteReplacement(value));
-	}
-	
 	public static String color(String input) {
+		if (input == null) return null;
 		return ChatColor.translateAlternateColorCodes('&', input);
 	}
 	
 	public static String discolor(String input) {
+		if (input == null) return null;
 		return ChatColor.stripColor(color(input));
 	}
 	
@@ -38,19 +38,43 @@ public class Util {
 		return String.valueOf(color.getChar());
 	}
 	
+	public static String join(List<String> list, String del) {
+		StringBuilder builder = new StringBuilder();
+		Iterator<String> it = list.iterator();
+		while (it.hasNext()) {
+			builder.append(it.next());
+			if (it.hasNext()) builder.append(del);
+		}
+		return builder.toString();
+	}
+	
+	public static List<String> groupsToStrings(List<Group> groups) {
+		return groups.stream().map(Group::getName).collect(Collectors.toList());
+	}
+	
+	public static boolean hasAny(CommandSender sender, Permission... permissions) {
+		for (Permission p : permissions) {
+			if (sender.hasPermission(p)) return true;
+		}
+		return false;
+	}
+	
 	// End utility methods
 	// Begin config methods
 	
-	public static void addToList(Config config, String path, String item) {
+	public static boolean addToList(Config config, String path, String item) {
 		List<String> list = getList(config, path);
-		list.add(item);
+		boolean s = list.add(item);
 		config.set(path, list);
+		return s;
 	}
 	
-	public static void removeFromList(Config config, String path, String item) {
+	public static boolean removeFromList(Config config, String path, String item) {
 		List<String> list = getList(config, path);
-		list.remove(item);
-		config.set(path, list);
+		boolean s = list.removeIf(s1 -> s1.equalsIgnoreCase(item));
+		if (list.size() == 0) config.set(path, null);
+		else config.set(path, list);
+		return s;
 	}
 	
 	public static List<String> getList(Config config, String path) {
@@ -123,12 +147,13 @@ public class Util {
 		return getGroups(parent, new ArrayList<>(), checked);
 	}
 	
+	
 	private static List<Group> getGroups(Group parent, List<Group> groups, List<Group> checked) {
 		for (Group group : parent.getInheritedGroups()) {
 			if (groups.stream().anyMatch(group1 -> group1.getName().equalsIgnoreCase(group.getName())) || checked.stream().anyMatch(group1 -> group1.getName().equalsIgnoreCase(group.getName()))) continue;
 			groups.add(group);
 			checked.add(group);
-			groups.addAll(getGroups(group, groups, checked));
+			groups.addAll(getGroups(group, new ArrayList<>(), checked));
 		}
 		return groups;
 	}
@@ -144,5 +169,18 @@ public class Util {
 	}
 	
 	// End group methods
+	// Debug methods
+	
+	public static void dumpList(String name, List<Group> list) {
+		log("- " + name);
+		list.forEach(group -> System.out.println(group.getName()));
+		log("-");
+	}
+	
+	public static void log(Object msg) {
+		System.out.println(msg.toString());
+	}
+	
+	// End debug methods
 	
 }

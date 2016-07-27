@@ -32,7 +32,7 @@ class Options implements Settings {
 	
 	@Override
 	public String getPrefix() {
-		return prefix;
+		return Util.color(prefix);
 	}
 	
 	@Override
@@ -46,7 +46,7 @@ class Options implements Settings {
 	
 	@Override
 	public String getSuffix() {
-		return suffix;
+		return Util.color(suffix);
 	}
 	
 	@Override

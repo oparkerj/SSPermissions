@@ -1,6 +1,9 @@
 package com.ssplugins.ssperm;
 
-import com.ssplugins.ssperm.perm.*;
+import com.ssplugins.ssperm.cmd.MainCommand;
+import com.ssplugins.ssperm.perm.GroupManager;
+import com.ssplugins.ssperm.perm.PlayerManager;
+import com.ssplugins.ssperm.perm.SSPermAPI;
 import com.ssplugins.ssperm.util.Config;
 import com.ssplugins.ssperm.util.Util;
 import org.bukkit.Bukkit;
@@ -25,6 +28,7 @@ class Manager implements SSPermAPI {
 		Util.defaultOptions(options);
 		groupMan.loadGroups();
 		Bukkit.getOnlinePlayers().forEach(attMan::setup);
+		plugin.getCommand("ssperm").setExecutor(new MainCommand());
 		plugin.getServer().getPluginManager().registerEvents(new Events(this), plugin);
 	}
 	
@@ -71,5 +75,11 @@ class Manager implements SSPermAPI {
 	@Override
 	public PlayerManager getPlayerManager() {
 		return playerMan;
+	}
+	
+	@Override
+	public void reload() {
+		options.reloadConfig();
+		groups.reloadConfig();
 	}
 }

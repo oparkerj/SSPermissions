@@ -4,6 +4,7 @@ import com.ssplugins.ssperm.events.GroupCreateEvent;
 import com.ssplugins.ssperm.events.GroupRemoveEvent;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.GroupManager;
+import com.ssplugins.ssperm.perm.SSPlayer;
 import com.ssplugins.ssperm.util.Util;
 import org.bukkit.entity.Player;
 
@@ -25,11 +26,12 @@ class GroupMan implements GroupManager {
 	}
 	
 	private void loadGroup(String name) {
+		if (name.equalsIgnoreCase("default")) return;
 		groups.add(new PermGroup(name));
 	}
 	
 	void resetPlayer(Player player) {
-		groups.stream().filter(permGroup -> permGroup.hasPlayer(player)).peek(permGroup -> permGroup.removeSilent(player));
+		Manager.get().getPlayerManager().getPlayer(player).getGroup().removePlayer(player);
 	}
 	
 	@Override
@@ -49,7 +51,16 @@ class GroupMan implements GroupManager {
 	public boolean removeGroup(String name) {
 		Events.callEvent(new GroupRemoveEvent(name));
 		Manager.getGroups().removeSection(name);
-		return groups.removeIf(permGroup -> permGroup.getName().equalsIgnoreCase(name));
+		final boolean[] y = {false};
+		groups.stream().filter(permGroup -> permGroup.getName().equalsIgnoreCase(name)).peek(permGroup -> {
+			permGroup.getPlayers().forEach(s -> {
+				Optional<SSPlayer> optional = Manager.get().getPlayerMan().getPlayerById(s);
+				if (optional.isPresent()) defGroup.addPlayer(optional.get().getPlayer());
+			});
+			permGroup.prepareToRemove();
+			if (groups.remove(permGroup)) y[0] = true;
+		});
+		return y[0];
 	}
 
 	@Override
@@ -59,6 +70,7 @@ class GroupMan implements GroupManager {
 
 	@Override
 	public Optional<Group> getGroup(String name) {
+		if (name.equalsIgnoreCase("default")) return Optional.of(defGroup);
 		Optional<PermGroup> optional = groups.stream().filter(permGroup -> permGroup.getName().equalsIgnoreCase(name)).findFirst();
 		if (optional.isPresent()) return Optional.of(optional.get());
 		else return Optional.empty();

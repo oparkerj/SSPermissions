@@ -3,3 +3,9 @@ main: com.ssplugins.ssperm.SSPerm
 version: 1.0.0
 
 author: StarShadow
+
+commands:
+  ssperm:
+    description: Manage players and groups.
+    aliases: [ssp]
+    usage: /ssp <args>

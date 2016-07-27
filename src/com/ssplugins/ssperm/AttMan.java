@@ -19,7 +19,7 @@ class AttMan {
 	}
 	
 	void clean() {
-		map.keySet().forEach(this::remove);
+		map.keySet().stream().peek(map::remove);
 	}
 	
 	void remove(String id) {
@@ -43,8 +43,9 @@ class AttMan {
 	
 	void setup(Player player) {
 		PermissionAttachment att = player.addAttachment(SSPerm.get());
-		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(fix(s), value(s)));
 		map.put(player.getUniqueId().toString(), att);
+		playerSet(player, manager.getPlayerManager().getPlayer(player).getGroup());
+//		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(fix(s), value(s)));
 	}
 	
 	void groupUpdate(String name, String perm, boolean add) {
@@ -58,11 +59,16 @@ class AttMan {
 		PermissionAttachment att = get(id);
 		if (att == null) return;
 		if (add) att.setPermission(fix(perm), value(perm));
-		else att.unsetPermission(perm);
+		else att.unsetPermission(fix(perm));
 	}
 	
 	void playerSet(Player player, Group group) {
-		PermissionAttachment att = get(player.getUniqueId().toString());
+		playerSet(player.getUniqueId().toString(), group);
+	}
+	
+	void playerSet(String id, Group group) {
+		PermissionAttachment att = get(id);
+		if (att == null) return;
 		att.getPermissions().forEach((s, set) -> att.unsetPermission(s));
 		group.getAllPermissions().forEach(s -> att.setPermission(fix(s), value(s)));
 	}

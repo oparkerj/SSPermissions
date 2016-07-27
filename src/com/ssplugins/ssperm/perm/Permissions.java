@@ -11,5 +11,7 @@ public interface Permissions {
 	boolean contains(String perm);
 	
 	Set<String> getAll();
+	
+	int length();
 
 }

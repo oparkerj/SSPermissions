@@ -5,5 +5,7 @@ public interface SSPermAPI {
 	GroupManager getGroupManager();
 
 	PlayerManager getPlayerManager();
+	
+	void reload();
 
 }

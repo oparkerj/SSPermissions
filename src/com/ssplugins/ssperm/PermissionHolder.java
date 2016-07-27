@@ -2,6 +2,7 @@ package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.callback.ChangeCallback;
 import com.ssplugins.ssperm.callback.GeneralCallback;
+import com.ssplugins.ssperm.callback.ListCallback;
 import com.ssplugins.ssperm.util.Config;
 import com.ssplugins.ssperm.util.Util;
 
@@ -10,7 +11,8 @@ abstract class PermissionHolder {
 	private PermList permList;
 	private Options options;
 	
-	private GeneralCallback callback = null;
+	private GeneralCallback optionCallback = null;
+	private ListCallback<String> permissionCallback = null;
 	
 	PermissionHolder(boolean group, String id) {
 		Config config = (group ? Manager.getGroups() : Manager.getPlayer(id));
@@ -21,6 +23,7 @@ abstract class PermissionHolder {
 			AttMan attMan = Manager.get().getAttMan();
 			if (group) attMan.groupUpdate(id, item, add);
 			else attMan.playerUpdate(id, item, add);
+			if (permissionCallback != null) permissionCallback.onUpdate(item, add);
 		});
 		options = new Options();
 		options.setCallback(new ChangeCallback() {
@@ -34,7 +37,7 @@ abstract class PermissionHolder {
 			
 			@Override
 			public void afterChange() {
-				if (callback != null) callback.onCall();
+				if (optionCallback != null) optionCallback.onCall();
 			}
 		});
 		
@@ -45,8 +48,12 @@ abstract class PermissionHolder {
 		config.save();
 	}
 	
-	void setCallback(GeneralCallback callback) {
-		this.callback = callback;
+	void setOptionCallback(GeneralCallback optionCallback) {
+		this.optionCallback = optionCallback;
+	}
+	
+	void setPermissionCallback(ListCallback<String> callback) {
+		this.permissionCallback = callback;
 	}
 	
 	PermList getPermList() {
