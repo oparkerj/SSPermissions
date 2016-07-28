@@ -34,7 +34,7 @@ class PermList implements Permissions {
 		return l;
 	}
 	
-	Set<String> rawSet() {
+	private Set<String> rawSet() {
 		return set;
 	}
 	
