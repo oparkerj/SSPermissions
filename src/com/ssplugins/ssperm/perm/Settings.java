@@ -52,7 +52,7 @@ public interface Settings {
 	}
 	
 	static String pick(String name, ChatColor player, ChatColor group) {
-		if (player == null && group == null) return "";
+		if (name.toLowerCase().contains("format") && (player == null && group == null)) return "";
 		if (player == null) player = ChatColor.getByChar(Util.getConfigNull(name));
 		if (group == null) group = ChatColor.getByChar(Util.getConfigNull(name));
 		return ChatColor.COLOR_CHAR + pick(name, Util.notNull(player), Util.notNull(group));

@@ -171,9 +171,15 @@ public class Util {
 	// End group methods
 	// Debug methods
 	
-	public static void dumpList(String name, List<Group> list) {
+	public static void dumpGroups(String name, List<Group> list) {
 		log("- " + name);
 		list.forEach(group -> System.out.println(group.getName()));
+		log("-");
+	}
+	
+	public static <T> void dumpList(String name, List<T> list) {
+		log("- " + name);
+		list.forEach(t -> System.out.println(t.toString()));
 		log("-");
 	}
 	

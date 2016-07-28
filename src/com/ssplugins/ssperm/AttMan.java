@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ class AttMan {
 	}
 	
 	void clean() {
-		map.keySet().stream().peek(map::remove);
+		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) remove(it.next());
 	}
 	
 	void remove(String id) {

@@ -9,6 +9,7 @@ import com.ssplugins.ssperm.util.Util;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,15 +51,18 @@ class GroupMan implements GroupManager {
 	@Override
 	public boolean removeGroup(String name) {
 		Events.callEvent(new GroupRemoveEvent(name));
-		Manager.getGroups().removeSection(name);
+		//Manager.getGroups().removeSection(name);
 		final boolean[] y = {false};
-		groups.stream().filter(permGroup -> permGroup.getName().equalsIgnoreCase(name)).peek(permGroup -> {
+		Iterator<PermGroup> it = groups.stream().filter(permGroup -> permGroup.getName().equalsIgnoreCase(name)).iterator();
+		it.forEachRemaining(permGroup -> {
 			permGroup.getPlayers().forEach(s -> {
 				Optional<SSPlayer> optional = Manager.get().getPlayerMan().getPlayerById(s);
 				if (optional.isPresent()) defGroup.addPlayer(optional.get().getPlayer());
 			});
-			permGroup.prepareToRemove();
-			if (groups.remove(permGroup)) y[0] = true;
+			if (groups.removeIf(permGroup1 -> permGroup1.getName().equalsIgnoreCase(name))) {
+				Manager.getGroups().removeSection(permGroup.getName());
+				y[0] = true;
+			}
 		});
 		return y[0];
 	}

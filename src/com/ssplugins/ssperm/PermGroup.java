@@ -59,8 +59,8 @@ class PermGroup extends PermissionHolder implements Group {
 		Util.removeFromList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 	}
 	
-	void prepareToRemove() {
-		Manager.getGroups().removeSection(name + ".players");
+	void removeSection() {
+		Manager.getGroups().removeSection(name);
 	}
 
 	@Override
@@ -89,6 +89,7 @@ class PermGroup extends PermissionHolder implements Group {
 		manager.getGroupMan().resetPlayer(player);
 		if (!name.equalsIgnoreCase("default")) Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, this);
+		manager.getPlayerManager().getPlayer(player).refreshChatFormat();
 		return true;
 	}
 
@@ -97,6 +98,7 @@ class PermGroup extends PermissionHolder implements Group {
 		if (!hasPlayer(player)) return false;
 		Util.removeFromList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, manager.getGroupManager().getDefaultGroup());
+		manager.getPlayerManager().getPlayer(player).refreshChatFormat();
 		return true;
 	}
 

@@ -73,7 +73,7 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	
 	@Override
 	public void resetGroups() {
-		manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).peek(group -> group.removePlayer(player));
+		manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).forEach(group -> group.removePlayer(player));
 		manager.getAttMan().playerSet(player, manager.getGroupManager().getDefaultGroup());
 	}
 	
