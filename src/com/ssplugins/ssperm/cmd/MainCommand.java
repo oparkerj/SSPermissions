@@ -114,13 +114,7 @@ public class MainCommand implements CommandExecutor {
 				msg(sender, "&7Permissions:");
 				group.getPermissions().getAll().forEach(s -> msg(sender, (s.startsWith("-") ? "&c" : "&a") + "- " + s));
 			}
-			if (group.getInheritedGroups().size() == 0) {
-				msg(sender, "&7Inherits: &eNone");
-			}
-			else {
-				msg(sender, "&7Inherits:");
-				msg(sender, "&e" + Util.join(Util.groupsToStrings(group.getInheritedGroups()), ", "));
-			}
+			msg(sender, "&7Inherits: &e" + (group.getInheritedGroups().size() == 0 ? "None" : Util.join(Util.groupsToStrings(group.getInheritedGroups()), ", ")));
 		}
 		else if (args.length < 4) {
 			String[] help = new String[] {
