@@ -211,5 +211,6 @@ These are things I plan to add in future updates:
 * Ability to change the chat format.
 * Finish the `reload()` method. (Currently only reloads configs, not actual group objects)
 * Ability to do stuff with players that are offline.
+* Pressing tab in chat to quickly type commands.
 
 If you have any suggestions, contact me somehow or make a PR.

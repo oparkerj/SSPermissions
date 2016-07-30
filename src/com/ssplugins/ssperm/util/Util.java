@@ -91,7 +91,7 @@ public class Util {
 				return ChatColor.getByChar(value).isColor();
 			case "nameFormat":
 			case "chatFormat":
-				return ChatColor.getByChar(value).isFormat();
+				return ChatColor.getByChar(value).isFormat() || ChatColor.getByChar(value) == ChatColor.RESET;
 			default:
 				return true;
 		}

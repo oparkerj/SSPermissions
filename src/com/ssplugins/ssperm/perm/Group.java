@@ -28,5 +28,7 @@ public interface Group {
 	boolean removePlayer(Player player);
 
 	boolean hasPlayer(Player player);
+	
+	boolean isDefault();
 
 }

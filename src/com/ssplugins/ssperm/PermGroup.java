@@ -28,9 +28,9 @@ class PermGroup extends PermissionHolder implements Group {
 	}
 	
 	private void updatePermission(String perm, boolean add) {
-		if (name.equalsIgnoreCase("default")) {
+		if (isDefault()) {
 			Bukkit.getOnlinePlayers().forEach(o -> {
-				if (manager.getPlayerManager().getPlayer(o).getGroup().getName().equalsIgnoreCase("default")) {
+				if (manager.getPlayerManager().getPlayer(o).getGroup().isDefault()) {
 					manager.getAttMan().playerUpdate(o.getUniqueId().toString(), perm, add);
 				}
 			});
@@ -80,6 +80,7 @@ class PermGroup extends PermissionHolder implements Group {
 
 	@Override
 	public List<String> getPlayers() {
+		if (isDefault()) return Bukkit.getOnlinePlayers().stream().filter(player -> Manager.get().getPlayerManager().getPlayer(player).getGroup().isDefault()).map(player -> player.getUniqueId().toString()).collect(Collectors.toList());
 		return Manager.getGroups().getConfig().getStringList(name + ".players");
 	}
 
@@ -87,7 +88,7 @@ class PermGroup extends PermissionHolder implements Group {
 	public boolean addPlayer(Player player) {
 		if (hasPlayer(player)) return false;
 		manager.getGroupMan().resetPlayer(player);
-		if (!name.equalsIgnoreCase("default")) Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
+		if (!isDefault()) Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, this);
 		manager.getPlayerManager().getPlayer(player).refreshChatFormat();
 		return true;
@@ -138,5 +139,10 @@ class PermGroup extends PermissionHolder implements Group {
 		boolean f = Util.removeFromList(Manager.getGroups(), this.name + ".inherits", name);
 		getPlayers().forEach(s -> manager.getAttMan().playerSet(s, this));
 		return f;
+	}
+	
+	@Override
+	public boolean isDefault() {
+		return name.equalsIgnoreCase("default");
 	}
 }
