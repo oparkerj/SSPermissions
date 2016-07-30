@@ -11,5 +11,4 @@ public class Perms {
 	public static final Permission MANAGE = new Permission("ssperm.manage", "Permission to manage players and groups.", PermissionDefault.OP);
 	public static final Permission ALL = new Permission("ssperm.*", "Permission to use any subcommand.", PermissionDefault.OP);
 	
-	
 }

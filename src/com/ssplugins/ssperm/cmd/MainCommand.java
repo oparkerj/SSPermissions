@@ -36,7 +36,7 @@ public class MainCommand implements CommandExecutor {
 		boolean manage = sender.hasPermission(Perms.MANAGE);
 		boolean all = sender.hasPermission(Perms.ALL);
 		if (all) manage = true;
-		if (sender.hasPermission(Perms.GROUPS) || manage) list.add("&b/ssp groups &a- &7List all groups.");
+		if (sender.hasPermission(Perms.GROUPS) || manage) list.add("&b/ssp list &a- &7List all groups.");
 		if (sender.hasPermission(Perms.GROUPS) || manage) list.add("&b/ssp group <name> <action> <value> &a- &7Manage a group.");
 		if (sender.hasPermission(Perms.PLAYERS) || manage) list.add("&b/ssp player <name> <action> <value> &a- &7Manage a player.");
 		if (sender.hasPermission(Perms.ADMIN) || all) {
@@ -68,7 +68,7 @@ public class MainCommand implements CommandExecutor {
 			else if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("r")) {
 				remove(sender, args);
 			}
-			else if (args[0].equalsIgnoreCase("groups")) {
+			else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
 				groups(sender);
 			}
 			else {
