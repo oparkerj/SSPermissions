@@ -1,5 +1,7 @@
 # Custom ignore
 
 /out
-*.iml
 /.idea
+*.floo
+*.flooignore
+*.iml
