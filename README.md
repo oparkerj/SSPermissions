@@ -79,6 +79,13 @@ The starting point for all subcommands.
     </tr>
 </table>
 
+Examples:  
+`/ssp group default` will show info for default group.  
+`/ssp create admin` will create a group named admin.  
+Examples with shorthand:  
+`/ssp r mod` will remove the group named mod.  
+`/ssp l` will list all groups.
+
 **Group Actions**  
 Modify `<setting>` for group `<name>`
 
@@ -145,6 +152,13 @@ Modify `<setting>` for group `<name>`
     </tr>
 </table>
 
+Examples:  
+`/ssp group default add bukkit.command.list` adds bukkit.command.list to default group.  
+`/ssp group default prefix &bUser_` sets the prefix for default group to User in aqua with a space after.  
+Examples with shorthand:  
+`/ssp g default nc e` sets the namecolor for players in this group to yellow.  
+`/ssp g mod i default` makes the group mod inherit the permissions of default.
+
 **Player Actions**  
 Modify `<setting>` for player `<name>` Player options (prefix, namecolor, etc.) will be used instead of group options if they are set.
 
@@ -205,6 +219,14 @@ Modify `<setting>` for player `<name>` Player options (prefix, namecolor, etc.) 
         <td>Set the player's chatformat to <code>&lt;value&gt;</code> (default: r)</td>
     </tr>
 </table>
+
+Examples:  
+`/ssp player Steve add -bukkit.command.plugins` adds a negative permission to Steve (so he can't do /pl)  
+`/ssp player Steve move mod` moves Steve into mod group.  
+Examples with shorthand:  
+`/ssp p Steve nf l` sets Steve's nameformat to bold.  
+`/ssp p Steve cc a` sets Steve's chatcolor to green.
+
 Planned Updates
 ---
 These are things I plan to add in future updates:
