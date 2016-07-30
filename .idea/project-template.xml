@@ -1,3 +1,0 @@
-<template>
-  <input-field default="com.ssplugins.project">IJ_BASE_PACKAGE</input-field>
-</template>
