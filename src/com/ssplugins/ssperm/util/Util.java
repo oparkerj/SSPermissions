@@ -138,6 +138,11 @@ public class Util {
 		config.save();
 	}
 	
+	public static String checkFormat(String format) {
+		if (format == null || (!format.contains("<player>") || !format.contains("<msg>"))) return "<prefix><player><suffix> &7> <msg>";
+		return format;
+	}
+	
 	// End config methods
 	// Start group methods
 	

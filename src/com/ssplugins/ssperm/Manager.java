@@ -78,6 +78,13 @@ class Manager implements SSPermAPI {
 	}
 	
 	@Override
+	public boolean setChatFormat(String format) {
+		if (format == null || (!format.contains("<player>") || !format.contains("<msg>"))) return false;
+		getOptions().set("chatFormat", format);
+		return true;
+	}
+	
+	@Override
 	public void reload() {
 		options.reloadConfig();
 		groups.reloadConfig();

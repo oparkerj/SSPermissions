@@ -42,6 +42,7 @@ public class MainCommand implements CommandExecutor {
 		if (sender.hasPermission(Perms.ADMIN) || all) {
 			list.add("&b/ssp create <name> &a- &7Create a group.");
 			list.add("&b/ssp remove <name> &a- &7Remove a group.");
+			list.add("&b/ssp format <format> &a- &7Change the chat format.");
 		}
 		if (list.isEmpty()) list.add("&cYou do not have permission to use this command.");
 		return list.toArray(new String[0]);
@@ -466,6 +467,27 @@ public class MainCommand implements CommandExecutor {
 			else {
 				msg(sender, "&aGroup &b" + args[1] + " &aremoved.");
 			}
+		}
+	}
+	
+	private void format(CommandSender sender, String[] args) {
+		// /ssp format <format>
+		if (!Util.hasAny(sender, Perms.ADMIN, Perms.ALL)) {
+			noPerm(sender);
+			return;
+		}
+		if (args.length < 2) {
+			msg(sender, "&b/ssp format <format> &a- &7Change the chat format.");
+		}
+		else {
+			String[] trim = new String[args.length - 1];
+			System.arraycopy(args, 1, trim, 0, trim.length);
+			String format = String.join(" ", trim);
+			if (!SSPerm.getAPI().setChatFormat(format)) {
+				msg(sender, "&eFormat must contain at least <player> and <msg> variables.");
+				return;
+			}
+			msg(sender, "&bChat format updated to &a" + format);
 		}
 	}
 }
