@@ -1,5 +1,7 @@
 package com.ssplugins.ssperm;
 
+import com.ssplugins.ssperm.events.PlayerModifyPermissionEvent;
+import com.ssplugins.ssperm.events.PlayerOptionsUpdatedEvent;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Permissions;
 import com.ssplugins.ssperm.perm.SSPlayer;
@@ -31,10 +33,12 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	
 	private void updateFormat() {
 		format = manager.getPlayerMan().getChatFormat(this);
+		Events.callEvent(new PlayerOptionsUpdatedEvent(this));
 	}
 	
 	private void updatePermission(String perm, boolean add) {
 		manager.getAttMan().playerUpdate(player.getUniqueId().toString(), perm, add);
+		Events.callEvent(new PlayerModifyPermissionEvent(this, perm, add));
 	}
 	
 	void unload() {

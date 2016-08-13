@@ -1,5 +1,7 @@
 package com.ssplugins.ssperm;
 
+import com.ssplugins.ssperm.events.GroupModifyPermissionEvent;
+import com.ssplugins.ssperm.events.GroupOptionsUpdatedEvent;
 import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.Permissions;
 import com.ssplugins.ssperm.perm.SSPlayer;
@@ -38,13 +40,9 @@ class PermGroup extends PermissionHolder implements Group {
 			return;
 		}
 		getPlayers().forEach(s -> {
-			Optional<SSPlayer> optional = Manager.get().getPlayerManager().getPlayerById(s);
-			if (optional.isPresent()) {
-				Permissions p = optional.get().getPermissions();
-				if (add) p.add(perm);
-				else p.remove(perm);
-			}
+			manager.getAttMan().playerUpdate(s, perm, add);
 		});
+		Events.callEvent(new GroupModifyPermissionEvent(this, perm, add));
 	}
 	
 	private void refreshFormats() {
@@ -54,6 +52,7 @@ class PermGroup extends PermissionHolder implements Group {
 				optional.get().refreshChatFormat();
 			}
 		});
+		Events.callEvent(new GroupOptionsUpdatedEvent(this));
 	}
 	
 	void removeSilent(Player player) {
