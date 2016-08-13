@@ -20,6 +20,11 @@ class PlayerMan implements PlayerManager {
 		players.removeIf(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString()));
 	}
 	
+	void unloadPlayers() {
+		players.forEach(PermPlayer::unload);
+		players.clear();
+	}
+	
 	String getChatFormat(Player player) {
 		String base = Manager.getOptions().getConfig().getString("chatFormat");
 		base = Util.checkFormat(Util.color(base));

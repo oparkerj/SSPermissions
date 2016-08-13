@@ -35,6 +35,12 @@ class GroupMan implements GroupManager {
 		Manager.get().getPlayerManager().getPlayer(player).getGroup().removePlayer(player);
 	}
 	
+	void unloadGroups() {
+		defGroup.unload();
+		groups.forEach(PermGroup::unload);
+		groups.clear();
+	}
+	
 	@Override
 	public Group createGroup(String name) {
 		if (name.equalsIgnoreCase(Util.getNone()) || name.equalsIgnoreCase("default")) return null;

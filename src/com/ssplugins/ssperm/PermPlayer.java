@@ -15,6 +15,7 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	private String format;
 	
 	private Player player;
+	private boolean loaded = true;
 	
 	PermPlayer(Player player) {
 		super(false, player.getUniqueId().toString());
@@ -36,28 +37,37 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 		manager.getAttMan().playerUpdate(player.getUniqueId().toString(), perm, add);
 	}
 	
+	void unload() {
+		loaded = false;
+	}
+	
 	@Override
 	public Player getPlayer() {
+		if (!loaded) return null;
 		return player;
 	}
 	
 	@Override
 	public String id() {
+		if (!loaded) return null;
 		return player.getUniqueId().toString();
 	}
 	
 	@Override
 	public Permissions getPermissions() {
+		if (!loaded) return null;
 		return getPermList();
 	}
 	
 	@Override
 	public Settings getSettings() {
+		if (!loaded) return null;
 		return getOptions();
 	}
 	
 	@Override
 	public Group getGroup() {
+		if (!loaded) return null;
 		Optional<Group> optional = manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).findFirst();
 		if (optional.isPresent()) return optional.get();
 		return manager.getGroupManager().getDefaultGroup();
@@ -65,6 +75,7 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	
 	@Override
 	public Set<String> getAllPermissions() {
+		if (!loaded) return null;
 		Set<String> perms = getPermissions().getAll();
 		Group group = getGroup();
 		perms.addAll(group.getAllPermissions());
@@ -73,17 +84,20 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	
 	@Override
 	public void resetGroups() {
+		if (!loaded) return;
 		manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).forEach(group -> group.removePlayer(player));
 		manager.getAttMan().playerSet(player, manager.getGroupManager().getDefaultGroup());
 	}
 	
 	@Override
 	public String getChatFormat() {
+		if (!loaded) return null;
 		return format;
 	}
 	
 	@Override
 	public void refreshChatFormat() {
+		if (!loaded) return;
 		updateFormat();
 	}
 }
