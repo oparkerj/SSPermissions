@@ -1,11 +1,12 @@
 package com.ssplugins.ssperm.perm;
 
+import com.ssplugins.ssperm.util.Unloadable;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
 
-public interface Group {
+public interface Group extends Unloadable {
 
 	String getName();
 

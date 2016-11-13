@@ -20,8 +20,14 @@ class PlayerMan implements PlayerManager {
 		players.removeIf(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString()));
 	}
 	
+	void unloadPlayers() {
+		players.forEach(PermPlayer::unload);
+		players.clear();
+	}
+	
 	String getChatFormat(Player player) {
 		String base = Manager.getOptions().getConfig().getString("chatFormat");
+		base = Util.checkFormat(Util.color(base));
 		SSPlayer p = getPlayer(player);
 		Settings playerSettings = p.getSettings();
 		Settings groupSettings = p.getGroup().getSettings();
@@ -35,7 +41,7 @@ class PlayerMan implements PlayerManager {
 	
 	String getChatFormat(SSPlayer player) {
 		String base = Manager.getOptions().getConfig().getString("chatFormat");
-		base = Util.color(base);
+		base = Util.checkFormat(Util.color(base));
 		Settings playerSettings = player.getSettings();
 		Settings groupSettings = player.getGroup().getSettings();
 		base = base.replace("<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));

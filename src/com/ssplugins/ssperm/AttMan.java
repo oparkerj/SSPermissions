@@ -46,7 +46,7 @@ class AttMan {
 		PermissionAttachment att = player.addAttachment(SSPerm.get());
 		map.put(player.getUniqueId().toString(), att);
 		playerSet(player, manager.getPlayerManager().getPlayer(player).getGroup());
-//		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(fix(s), value(s)));
+		manager.getPlayerManager().getPlayer(player).getAllPermissions().forEach(s -> att.setPermission(fix(s), value(s)));
 	}
 	
 	void groupUpdate(String name, String perm, boolean add) {

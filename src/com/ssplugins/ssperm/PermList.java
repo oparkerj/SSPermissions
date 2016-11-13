@@ -6,6 +6,8 @@ import com.ssplugins.ssperm.perm.Permissions;
 import com.ssplugins.ssperm.util.Util;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 class PermList implements Permissions {
@@ -70,6 +72,18 @@ class PermList implements Permissions {
 	@Override
 	public Set<String> getAll() {
 		return new HashSet<>(set);
+	}
+	
+	@Override
+	public void set(List<String> perms) {
+		for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
+			String perm = it.next();
+			if (!perms.contains(perm)) remove(perm);
+		}
+		perms.forEach(s -> {
+			if (contains(s)) return;
+			add(s);
+		});
 	}
 	
 	@Override

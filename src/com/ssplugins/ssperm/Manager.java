@@ -1,6 +1,7 @@
 package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.cmd.MainCommand;
+import com.ssplugins.ssperm.events.SSPReloadEvent;
 import com.ssplugins.ssperm.perm.GroupManager;
 import com.ssplugins.ssperm.perm.PlayerManager;
 import com.ssplugins.ssperm.perm.SSPermAPI;
@@ -78,8 +79,21 @@ class Manager implements SSPermAPI {
 	}
 	
 	@Override
+	public boolean setChatFormat(String format) {
+		if (format == null || (!format.contains("<player>") || !format.contains("<msg>"))) return false;
+		getOptions().set("chatFormat", format);
+		return true;
+	}
+	
+	@Override
 	public void reload() {
+		playerMan.unloadPlayers();
+		groupMan.unloadGroups();
+		attMan.clean();
 		options.reloadConfig();
 		groups.reloadConfig();
+		groupMan.loadGroups();
+		Bukkit.getOnlinePlayers().forEach(attMan::setup);
+		Events.callEvent(new SSPReloadEvent());
 	}
 }

@@ -6,6 +6,8 @@ public interface SSPermAPI {
 
 	PlayerManager getPlayerManager();
 	
+	boolean setChatFormat(String format);
+	
 	void reload();
 
 }
