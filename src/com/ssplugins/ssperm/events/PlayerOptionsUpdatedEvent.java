@@ -7,8 +7,9 @@ import org.bukkit.entity.Player;
 public class PlayerOptionsUpdatedEvent extends SSEvent {
 	
 	private SSPlayer player;
+	private String option;
 	
-	public PlayerOptionsUpdatedEvent(SSPlayer player) {
+	public PlayerOptionsUpdatedEvent(SSPlayer player, String option) {
 		this.player = player;
 	}
 	
@@ -18,5 +19,9 @@ public class PlayerOptionsUpdatedEvent extends SSEvent {
 	
 	public SSPlayer getSSPlayer() {
 		return player;
+	}
+	
+	public String getOption() {
+		return option;
 	}
 }

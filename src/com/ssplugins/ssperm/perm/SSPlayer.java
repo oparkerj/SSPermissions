@@ -1,10 +1,11 @@
 package com.ssplugins.ssperm.perm;
 
+import com.ssplugins.ssperm.util.Unloadable;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public interface SSPlayer {
+public interface SSPlayer extends Unloadable {
 	
 	Player getPlayer();
 	

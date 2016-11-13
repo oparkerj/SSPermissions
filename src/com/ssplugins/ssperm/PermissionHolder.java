@@ -3,6 +3,7 @@ package com.ssplugins.ssperm;
 import com.ssplugins.ssperm.callback.ChangeCallback;
 import com.ssplugins.ssperm.callback.GeneralCallback;
 import com.ssplugins.ssperm.callback.ListCallback;
+import com.ssplugins.ssperm.callback.NamedCallback;
 import com.ssplugins.ssperm.util.Config;
 import com.ssplugins.ssperm.util.Util;
 
@@ -11,7 +12,7 @@ abstract class PermissionHolder {
 	private PermList permList;
 	private Options options;
 	
-	private GeneralCallback optionCallback = null;
+	private NamedCallback optionCallback = null;
 	private ListCallback<String> permissionCallback = null;
 	
 	PermissionHolder(boolean group, String id) {
@@ -36,8 +37,8 @@ abstract class PermissionHolder {
 			}
 			
 			@Override
-			public void afterChange() {
-				if (optionCallback != null) optionCallback.onCall();
+			public void afterChange(String name) {
+				if (optionCallback != null) optionCallback.onCall(name);
 			}
 		});
 		
@@ -48,7 +49,7 @@ abstract class PermissionHolder {
 		config.save();
 	}
 	
-	void setOptionCallback(GeneralCallback optionCallback) {
+	void setOptionCallback(NamedCallback optionCallback) {
 		this.optionCallback = optionCallback;
 	}
 	

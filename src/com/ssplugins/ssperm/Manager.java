@@ -89,6 +89,7 @@ class Manager implements SSPermAPI {
 	public void reload() {
 		playerMan.unloadPlayers();
 		groupMan.unloadGroups();
+		attMan.clean();
 		options.reloadConfig();
 		groups.reloadConfig();
 		groupMan.loadGroups();

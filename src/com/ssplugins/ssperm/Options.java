@@ -40,7 +40,7 @@ class Options implements Settings {
 		if (!Callback.handle(callback, "prefix", this.prefix, prefix)) return false;
 		if (prefix.equalsIgnoreCase(Util.getConfigNull("prefix"))) prefix = null;
 		this.prefix = prefix;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("prefix");
 		return true;
 	}
 	
@@ -54,7 +54,7 @@ class Options implements Settings {
 		if (!Callback.handle(callback, "suffix", this.suffix, suffix)) return false;
 		if (suffix.equalsIgnoreCase(Util.getConfigNull("suffix"))) suffix = null;
 		this.suffix = suffix;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("suffix");
 		return true;
 	}
 	
@@ -68,7 +68,7 @@ class Options implements Settings {
 		if (!Callback.handle(callback, "nameColor", this.nameColor, color)) return false;
 		if (color != null && String.valueOf(color.getChar()).equalsIgnoreCase(Util.getConfigNull("nameColor"))) color = null;
 		nameColor = color;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("nameColor");
 		return true;
 	}
 	
@@ -82,7 +82,7 @@ class Options implements Settings {
 		if (!Callback.handle(callback, "nameFormat", this.nameFormat, format)) return false;
 		if (format != null && String.valueOf(format.getChar()).equalsIgnoreCase(Util.getConfigNull("nameFormat"))) format = null;
 		nameFormat = format;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("nameFormat");
 		return true;
 	}
 	
@@ -94,9 +94,9 @@ class Options implements Settings {
 	@Override
 	public boolean setChatColor(ChatColor color) {
 		if (!Callback.handle(callback, "chatColor", this.chatColor, color)) return false;
-		if (color != null && String.valueOf(color.getChar()).equalsIgnoreCase(Util.getConfigNull("nameColor"))) color = null;
+		if (color != null && String.valueOf(color.getChar()).equalsIgnoreCase(Util.getConfigNull("chatColor"))) color = null;
 		chatColor = color;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("chatColor");
 		return true;
 	}
 	
@@ -108,9 +108,9 @@ class Options implements Settings {
 	@Override
 	public boolean setChatFormat(ChatColor format) {
 		if (!Callback.handle(callback, "chatFormat", this.chatFormat, format)) return false;
-		if (format != null && String.valueOf(format.getChar()).equalsIgnoreCase(Util.getConfigNull("nameFormat"))) format = null;
+		if (format != null && String.valueOf(format.getChar()).equalsIgnoreCase(Util.getConfigNull("chatFormat"))) format = null;
 		chatFormat = format;
-		if (callback != null) callback.afterChange();
+		if (callback != null) callback.afterChange("chatFormat");
 		return true;
 	}
 	

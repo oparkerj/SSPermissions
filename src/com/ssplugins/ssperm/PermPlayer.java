@@ -31,9 +31,9 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 		this.format = format;
 	}
 	
-	private void updateFormat() {
+	private void updateFormat(String option) {
 		format = manager.getPlayerMan().getChatFormat(this);
-		Events.callEvent(new PlayerOptionsUpdatedEvent(this));
+		Events.callEvent(new PlayerOptionsUpdatedEvent(this, option));
 	}
 	
 	private void updatePermission(String perm, boolean add) {
@@ -102,6 +102,17 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	@Override
 	public void refreshChatFormat() {
 		if (!loaded) return;
-		updateFormat();
+		updateFormat("refreshChatFormat");
+	}
+	
+	@Override
+	public boolean isLoaded() {
+		return loaded;
+	}
+	
+	@Override
+	public Optional<SSPlayer> refresh() {
+		if (!player.isOnline()) return Optional.empty();
+		return Optional.of(Manager.get().getPlayerManager().getPlayer(player));
 	}
 }

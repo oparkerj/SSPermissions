@@ -45,14 +45,14 @@ class PermGroup extends PermissionHolder implements Group {
 		Events.callEvent(new GroupModifyPermissionEvent(this, perm, add));
 	}
 	
-	private void refreshFormats() {
+	private void refreshFormats(String option) {
 		getPlayers().forEach(s -> {
 			Optional<SSPlayer> optional = Manager.get().getPlayerManager().getPlayerById(s);
 			if (optional.isPresent()) {
 				optional.get().refreshChatFormat();
 			}
 		});
-		Events.callEvent(new GroupOptionsUpdatedEvent(this));
+		Events.callEvent(new GroupOptionsUpdatedEvent(this, option));
 	}
 	
 	void removeSilent(Player player) {
@@ -160,5 +160,15 @@ class PermGroup extends PermissionHolder implements Group {
 	public boolean isDefault() {
 		if (!loaded) return false;
 		return name.equalsIgnoreCase("default");
+	}
+	
+	@Override
+	public boolean isLoaded() {
+		return loaded;
+	}
+	
+	@Override
+	public Optional<Group> refresh() {
+		return Manager.get().getGroupManager().getGroup(name);
 	}
 }
