@@ -77,6 +77,10 @@ The starting point for all subcommands.
         <td>player</td>
         <td>View info about player <code>&lt;name&gt;</code> (If they are online). Or modify <code>&lt;setting&gt;</code> for the player.</td>
     </tr>
+    <tr>
+        <td>reload</td>
+        <td>Reload the plugin. Any changes made in the configs will take effect.</td>
+    </tr>
 </table>
 
 Examples:  
@@ -230,9 +234,14 @@ Examples with shorthand:
 Planned Updates
 ---
 These are things I plan to add in future updates:
-* Ability to change the chat format.
-* Finish the `reload()` method. (Currently only reloads configs, not actual group objects)
 * Ability to do stuff with players that are offline.
 * Pressing tab in chat to quickly type commands.
+
+Implemented Updates
+---
+These are updates that have been added since initial release:  
+**Version 1.1.0:**
+* Ability to change the chat format.
+* Finish the `reload()` method. (Currently only reloads configs, not actual group objects)
 
 If you have any suggestions, contact me somehow or make a PR.
