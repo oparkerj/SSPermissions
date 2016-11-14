@@ -23,7 +23,7 @@ How to Use
     </tr>
     <tr>
         <td>ssperm.manage</td>
-        <td>Permission to manage players and groups. (Does not give .admin)</td>
+        <td>Permission to manage players and groups. (Does not give .admin or .reload)</td>
     </tr>
     <tr>
         <td>ssperm.manage.admin</td>
