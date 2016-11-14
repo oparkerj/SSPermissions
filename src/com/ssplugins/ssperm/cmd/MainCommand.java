@@ -73,6 +73,9 @@ public class MainCommand implements CommandExecutor {
 			else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
 				groups(sender);
 			}
+			else if (args[0].equalsIgnoreCase("format") || args[0].equalsIgnoreCase("f")) {
+				format(sender, args);
+			}
 			else if (args[0].equalsIgnoreCase("reload")) {
 				reload(sender);
 			}
@@ -496,7 +499,7 @@ public class MainCommand implements CommandExecutor {
 	}
 	
 	private void reload(CommandSender sender) {
-		if (!Util.hasAny(sender, Perms.RELOAD, Perms.MANAGE, Perms.ALL)) {
+		if (!Util.hasAny(sender, Perms.RELOAD, Perms.ALL)) {
 			noPerm(sender);
 			return;
 		}
