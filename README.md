@@ -30,6 +30,10 @@ How to Use
         <td>Permission to create/remove groups.</td>
     </tr>
     <tr>
+        <td>ssperm.manage.reload</td>
+        <td>Permission to reload the plugin.</td>
+    </tr>
+    <tr>
         <td>ssperm.manage.groups</td>
         <td>Permission to manage groups.</td>
     </tr>
