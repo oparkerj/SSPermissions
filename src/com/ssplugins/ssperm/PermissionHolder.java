@@ -1,7 +1,6 @@
 package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.callback.ChangeCallback;
-import com.ssplugins.ssperm.callback.GeneralCallback;
 import com.ssplugins.ssperm.callback.ListCallback;
 import com.ssplugins.ssperm.callback.NamedCallback;
 import com.ssplugins.ssperm.util.Config;
