@@ -245,15 +245,3 @@ These are things I plan to add in future updates:
 * BungeeCord support
 * Ability to set chat format per player/group
 * Ability to do stuff with players that are offline.
-
-Implemented Updates
----
-These are updates that have been added since initial release:  
-**Version 1.1.0:**
-* Ability to change the chat format.
-* Finish the `reload()` method. (Currently only reloads configs, not actual group objects)
-
-**Version 1.1.1:**
-* Pressing tab in chat to quickly type commands.
-
-If you have any suggestions, contact me somehow or make a PR.
