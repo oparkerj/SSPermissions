@@ -1,6 +1,7 @@
 package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.cmd.MainCommand;
+import com.ssplugins.ssperm.cmd.MainTabCompleter;
 import com.ssplugins.ssperm.events.SSPReloadEvent;
 import com.ssplugins.ssperm.perm.GroupManager;
 import com.ssplugins.ssperm.perm.PlayerManager;
@@ -30,6 +31,7 @@ class Manager implements SSPermAPI {
 		groupMan.loadGroups();
 		Bukkit.getOnlinePlayers().forEach(attMan::setup);
 		plugin.getCommand("ssperm").setExecutor(new MainCommand());
+		plugin.getCommand("ssperm").setTabCompleter(new MainTabCompleter());
 		plugin.getServer().getPluginManager().registerEvents(new Events(this), plugin);
 	}
 	
