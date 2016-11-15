@@ -39,7 +39,7 @@ public class MainCommand implements CommandExecutor {
 		if (sender.hasPermission(Perms.GROUPS) || manage) list.add("&b/ssp list &a- &7List all groups.");
 		if (sender.hasPermission(Perms.GROUPS) || manage) list.add("&b/ssp group <name> <action> <value> &a- &7Manage a group.");
 		if (sender.hasPermission(Perms.PLAYERS) || manage) list.add("&b/ssp player <name> <action> <value> &a- &7Manage a player.");
-		if (sender.hasPermission(Perms.RELOAD) || manage) list.add("&b/ssp reload &a- &7Reload the plugin. All permissions will be updated.");
+		if (sender.hasPermission(Perms.RELOAD)) list.add("&b/ssp reload &a- &7Reload the plugin. All permissions will be updated.");
 		if (sender.hasPermission(Perms.ADMIN) || all) {
 			list.add("&b/ssp create <name> &a- &7Create a group.");
 			list.add("&b/ssp remove <name> &a- &7Remove a group.");
@@ -72,6 +72,9 @@ public class MainCommand implements CommandExecutor {
 			}
 			else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
 				groups(sender);
+			}
+			else if (args[0].equalsIgnoreCase("format") || args[0].equalsIgnoreCase("f")) {
+				format(sender, args);
 			}
 			else if (args[0].equalsIgnoreCase("reload")) {
 				reload(sender);
@@ -496,7 +499,7 @@ public class MainCommand implements CommandExecutor {
 	}
 	
 	private void reload(CommandSender sender) {
-		if (!Util.hasAny(sender, Perms.RELOAD, Perms.MANAGE, Perms.ALL)) {
+		if (!Util.hasAny(sender, Perms.RELOAD, Perms.ALL)) {
 			noPerm(sender);
 			return;
 		}

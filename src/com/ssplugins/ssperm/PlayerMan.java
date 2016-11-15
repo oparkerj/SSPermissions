@@ -25,6 +25,10 @@ class PlayerMan implements PlayerManager {
 		players.clear();
 	}
 	
+	void reloadFormats() {
+		players.forEach(PermPlayer::refreshChatFormat);
+	}
+	
 	String getChatFormat(Player player) {
 		String base = Manager.getOptions().getConfig().getString("chatFormat");
 		base = Util.checkFormat(Util.color(base));
