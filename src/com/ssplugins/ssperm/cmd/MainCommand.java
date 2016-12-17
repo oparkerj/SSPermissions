@@ -345,7 +345,7 @@ public class MainCommand implements CommandExecutor {
 					msg(sender, "&b" + player.getPlayer().getName() + " &eis already in &b" + g.getName() + "&e.");
 				}
 				else {
-					msg(player.getPlayer(), "&eYou were moved to group &b" + g.getName() + "&e.");
+					if (SSPerm.getAPI().getConfig().getBoolean("msgPlayerWhenMoved")) msg(player.getPlayer(), "&eYou were moved to group &b" + g.getName() + "&e.");
 					msg(sender, "&b" + player.getPlayer().getName() + " &awas moved to &b" + g.getName() + "&a.");
 				}
 			}
