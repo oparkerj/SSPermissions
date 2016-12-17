@@ -1,6 +1,10 @@
 name: SSPerm
 main: com.ssplugins.ssperm.SSPerm
+<<<<<<< HEAD
 version: 1.2.1
+=======
+version: 1.2.0
+>>>>>>> origin/master
 
 author: StarShadow
 

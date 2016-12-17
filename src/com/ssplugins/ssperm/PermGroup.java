@@ -139,6 +139,12 @@ class PermGroup extends PermissionHolder implements Group {
 	}
 	
 	@Override
+	public List<Group> findParentGroups() {
+		if (!loaded) return null;
+		return manager.getGroupManager().getGroups().stream().filter(group -> group.getInheritedGroups().contains(this)).collect(Collectors.toList());
+	}
+	
+	@Override
 	public boolean inherit(Group group) {
 		if (!loaded) return false;
 		if (Manager.getGroups().getConfig().getStringList(name + ".inherits").stream().anyMatch(s -> group.getName().equalsIgnoreCase(s))) return false;
