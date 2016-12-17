@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MainTabCompleter implements TabCompleter {
 	@Override
@@ -37,7 +38,7 @@ public class MainTabCompleter implements TabCompleter {
 				case "group":
 				case "g":
 					if (!Util.hasAny(sender, Perms.GROUPS, Perms.MANAGE, Perms.ALL)) break;
-					return SSPerm.getAPI().getGroupManager().getGroups().stream().map(Group::getName).collect(Collectors.toList());
+					return Stream.concat(SSPerm.getAPI().getGroupManager().getGroups().stream().map(Group::getName), Stream.of("default")).collect(Collectors.toList());
 				case "player":
 				case "p":
 					if (!Util.hasAny(sender, Perms.PLAYERS, Perms.MANAGE, Perms.ALL)) break;
