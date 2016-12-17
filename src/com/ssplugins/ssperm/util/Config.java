@@ -2,12 +2,13 @@ package com.ssplugins.ssperm.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Config {
+public class Config implements ConfigReader {
 	
 	private JavaPlugin plugin;
 	private String name;
@@ -105,4 +106,23 @@ public class Config {
 		return getConfig().contains(path);
 	}
 	
+	@Override
+	public String getString(String path) {
+		return getConfig().getString(path);
+	}
+	
+	@Override
+	public boolean getBoolean(String path) {
+		return getConfig().getBoolean(path);
+	}
+	
+	@Override
+	public List<String> getStringList(String path) {
+		return getConfig().getStringList(path);
+	}
+	
+	@Override
+	public Object get(String path) {
+		return getConfig().get(path);
+	}
 }

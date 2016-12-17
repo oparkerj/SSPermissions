@@ -54,6 +54,7 @@ class AttMan {
 		if (!optional.isPresent()) return;
 		Group group = optional.get();
 		group.getPlayers().forEach(s -> playerUpdate(s, perm, add));
+		group.findParentGroups().forEach(group1 -> groupUpdate(group1.getName(), perm, add));
 	}
 	
 	void playerUpdate(String id, String perm, boolean add) {

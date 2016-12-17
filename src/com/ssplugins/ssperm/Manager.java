@@ -7,6 +7,7 @@ import com.ssplugins.ssperm.perm.GroupManager;
 import com.ssplugins.ssperm.perm.PlayerManager;
 import com.ssplugins.ssperm.perm.SSPermAPI;
 import com.ssplugins.ssperm.util.Config;
+import com.ssplugins.ssperm.util.ConfigReader;
 import com.ssplugins.ssperm.util.Util;
 import org.bukkit.Bukkit;
 
@@ -89,11 +90,17 @@ class Manager implements SSPermAPI {
 	}
 	
 	@Override
+	public ConfigReader getConfig() {
+		return options;
+	}
+	
+	@Override
 	public void reload() {
 		playerMan.unloadPlayers();
 		groupMan.unloadGroups();
 		attMan.clean();
 		options.reloadConfig();
+		Util.defaultOptions(options);
 		groups.reloadConfig();
 		groupMan.loadGroups();
 		Bukkit.getOnlinePlayers().forEach(attMan::setup);

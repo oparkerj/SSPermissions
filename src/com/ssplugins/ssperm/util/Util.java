@@ -134,6 +134,7 @@ public class Util {
 	
 	public static void defaultOptions(Config config) {
 		config.setDefault("chatFormat", "<prefix><player><suffix> &7> <msg>");
+		config.setDefault("msgPlayerWhenMoved", true);
 		config.setValue("chatVariables", getChatVars());
 		config.save();
 	}

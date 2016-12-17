@@ -18,6 +18,8 @@ public interface Group extends Unloadable {
 	
 	List<Group> getInheritedGroups();
 	
+	List<Group> findParentGroups();
+	
 	boolean inherit(Group group);
 	
 	boolean unInherit(String name);
