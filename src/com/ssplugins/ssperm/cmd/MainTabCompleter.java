@@ -50,11 +50,11 @@ public class MainTabCompleter implements TabCompleter {
 				case "group":
 				case "g":
 					if (!Util.hasAny(sender, Perms.GROUPS, Perms.MANAGE, Perms.ALL)) break;
-					return Arrays.asList("add", "remove", "inherit", "uninherit", "prefix", "suffix", "namecolor", "nameformat", "chatcolor", "chatformat");
+					return Arrays.asList("add", "remove", "inherit", "uninherit", "prefix", "suffix", "format", "namecolor", "nameformat", "chatcolor", "chatformat");
 				case "player":
 				case "p":
 					if (!Util.hasAny(sender, Perms.PLAYERS, Perms.MANAGE, Perms.ALL)) break;
-					return Arrays.asList("add", "remove", "move", "prefix", "suffix", "namecolor", "nameformat", "chatcolor", "chatformat");
+					return Arrays.asList("add", "remove", "move", "prefix", "suffix", "format", "namecolor", "nameformat", "chatcolor", "chatformat");
 			}
 		}
 		else if (index == 4) {

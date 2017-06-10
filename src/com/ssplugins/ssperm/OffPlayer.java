@@ -1,81 +1,71 @@
 package com.ssplugins.ssperm;
 
-import com.ssplugins.ssperm.events.PlayerModifyPermissionEvent;
-import com.ssplugins.ssperm.events.PlayerOptionsUpdatedEvent;
+import com.ssplugins.ssperm.events.PlayerOfflineOptionEvent;
+import com.ssplugins.ssperm.events.PlayerOfflinePermissionEvent;
 import com.ssplugins.ssperm.perm.*;
 import com.ssplugins.ssperm.util.Option;
-import org.bukkit.entity.Player;
+import com.ssplugins.ssperm.util.Util;
+import org.bukkit.OfflinePlayer;
 
 import java.util.Optional;
 import java.util.Set;
 
-class PermPlayer extends PermissionHolder implements SSPlayer {
+class OffPlayer implements SSOfflinePlayer {
 	
 	private Manager manager;
 	
-	private Player player;
-	private boolean loaded = true;
+	private OfflinePlayer player;
 	
-	PermPlayer(Player player) {
-		super(false, player.getUniqueId().toString());
+	OffPlayer(OfflinePlayer player) {
 		this.player = player;
 		manager = Manager.get();
-		super.setOptionCallback(this::optionUpdated);
-		super.setPermissionCallback(this::permissionUpdated);
+		Util.loadOptions(null, Manager.getPlayer(id()), id());
 	}
 	
 	private void optionUpdated(Option option, String oldValue, String newValue) {
-		Events.callEvent(new PlayerOptionsUpdatedEvent(this, option, oldValue, newValue));
+		Events.callEvent(new PlayerOfflineOptionEvent(this, option, oldValue, newValue));
 	}
 	
 	private void permissionUpdated(String perm, boolean add) {
-		Events.callEvent(new PlayerModifyPermissionEvent(this, perm, add));
-	}
-	
-	void unload() {
-		loaded = false;
-		super.unloadCallbacks();
+		Events.callEvent(new PlayerOfflinePermissionEvent(this, perm, add));
 	}
 	
 	@Override
-	public Player getPlayer() {
-		if (!loaded) return null;
+	public OfflinePlayer getPlayer() {
 		return player;
 	}
 	
 	@Override
 	public String id() {
-		if (!loaded) return null;
 		return player.getUniqueId().toString();
 	}
 	
 	@Override
-	public SSOfflinePlayer getOfflinePlayer() {
-		return manager.getPlayerMan().getOfflinePlayer(player);
+	public Optional<SSPlayer> getSSPlayer() {
+		if (!player.isOnline()) return Optional.empty();
+		return Optional.of(manager.getPlayerMan().getPlayer(player.getPlayer()));
 	}
 	
 	@Override
 	public Permissions getPermissions() {
-		if (!loaded) return null;
-		return getPermList();
+		if (player.isOnline()) return manager.getPlayerMan().getPlayer(player.getPlayer()).getPermissions();
+		else return Permissions.temp(id(), Manager.getPlayer(id()), this::permissionUpdated);
 	}
 	
 	@Override
 	public Settings getSettings() {
-		if (!loaded) return null;
-		return getOptions();
+		if (player.isOnline()) return manager.getPlayerMan().getPlayer(player.getPlayer()).getSettings();
+		else return Settings.temp(id(), Manager.getPlayer(id()), this::optionUpdated);
 	}
 	
 	@Override
 	public Group getGroup() {
-		if (!loaded) return null;
 		Optional<Group> optional = manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).findFirst();
 		return optional.orElseGet(() -> manager.getGroupManager().getDefaultGroup());
 	}
 	
 	@Override
 	public Set<String> getAllPermissions() {
-		if (!loaded) return null;
 		Set<String> perms = getPermissions().getAll();
 		Group group = getGroup();
 		perms.addAll(group.getAllPermissions());
@@ -84,25 +74,12 @@ class PermPlayer extends PermissionHolder implements SSPlayer {
 	
 	@Override
 	public void leaveGroup() {
-		if (!loaded) return;
 		manager.getGroupManager().getGroups().stream().filter(group -> group.hasPlayer(player)).forEach(group -> group.removePlayer(player));
 		manager.getAttMan().playerSet(player, manager.getGroupManager().getDefaultGroup());
 	}
 	
 	@Override
 	public String getChatFormat() {
-		if (!loaded) return null;
 		return getSettings().getMessageFormat();
-	}
-	
-	@Override
-	public boolean isLoaded() {
-		return loaded;
-	}
-	
-	@Override
-	public Optional<SSPlayer> refresh() {
-		if (!player.isOnline()) return Optional.empty();
-		return Optional.of(Manager.get().getPlayerManager().getPlayer(player));
 	}
 }

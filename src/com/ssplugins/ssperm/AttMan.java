@@ -1,12 +1,14 @@
 package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.perm.Group;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 class AttMan {
@@ -20,12 +22,20 @@ class AttMan {
 	}
 	
 	void clean() {
-		for (Iterator<String> it = map.keySet().iterator(); it.hasNext();) remove(it.next());
+		for (Iterator<Entry<String, PermissionAttachment>> it = map.entrySet().iterator(); it.hasNext();) {
+			Entry<String, PermissionAttachment> entry = it.next();
+			cleanAttachment(entry.getValue());
+			it.remove();
+		}
+	}
+	
+	private void cleanAttachment(PermissionAttachment att) {
+		if (att != null) att.remove();
 	}
 	
 	void remove(String id) {
 		PermissionAttachment att = map.get(id);
-		if (att != null) att.remove();
+		cleanAttachment(att);
 		map.remove(id);
 	}
 	
@@ -65,6 +75,10 @@ class AttMan {
 	}
 	
 	void playerSet(Player player, Group group) {
+		playerSet(player.getUniqueId().toString(), group);
+	}
+	
+	void playerSet(OfflinePlayer player, Group group) {
 		playerSet(player.getUniqueId().toString(), group);
 	}
 	

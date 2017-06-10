@@ -4,6 +4,7 @@ import com.ssplugins.ssperm.cmd.MainCommand;
 import com.ssplugins.ssperm.cmd.MainTabCompleter;
 import com.ssplugins.ssperm.events.SSPReloadEvent;
 import com.ssplugins.ssperm.perm.GroupManager;
+import com.ssplugins.ssperm.perm.PlayerData;
 import com.ssplugins.ssperm.perm.PlayerManager;
 import com.ssplugins.ssperm.perm.SSPermAPI;
 import com.ssplugins.ssperm.util.Config;
@@ -17,7 +18,7 @@ class Manager implements SSPermAPI {
 	
 	private static Manager instance;
 	
-	private static Config options, groups;
+	private static Config options, groups, catalog;
 	private GroupMan groupMan = new GroupMan();
 	private PlayerMan playerMan = new PlayerMan();
 	private AttMan attMan = new AttMan(this);
@@ -26,8 +27,10 @@ class Manager implements SSPermAPI {
 		instance = this;
 		options = new Config(plugin, "config.yml");
 		groups = new Config(plugin, "groups.yml");
+		catalog = new Config(plugin, "catalog.yml");
 		options.generateFile();
 		groups.generateFile();
+		catalog.generateFile();
 		Util.defaultOptions(options);
 		groupMan.loadGroups();
 		Bukkit.getOnlinePlayers().forEach(attMan::setup);
@@ -59,6 +62,10 @@ class Manager implements SSPermAPI {
 		return config;
 	}
 	
+	static Config getCatalog() {
+		return catalog;
+	}
+	
 	AttMan getAttMan() {
 		return attMan;
 	}
@@ -83,10 +90,14 @@ class Manager implements SSPermAPI {
 	
 	@Override
 	public boolean setChatFormat(String format) {
-		if (format == null || (!format.contains("<player>") || !format.contains("<msg>"))) return false;
+		if (!Util.validChatFormat(format)) return false;
 		getOptions().set("chatFormat", format);
-		playerMan.reloadFormats();
 		return true;
+	}
+	
+	@Override
+	public String getChatFormat(PlayerData data) {
+		return getPlayerMan().getChatFormat(data);
 	}
 	
 	@Override
@@ -99,6 +110,7 @@ class Manager implements SSPermAPI {
 		playerMan.unloadPlayers();
 		groupMan.unloadGroups();
 		attMan.clean();
+		catalog.reloadConfig();
 		options.reloadConfig();
 		Util.defaultOptions(options);
 		groups.reloadConfig();

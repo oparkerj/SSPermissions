@@ -6,9 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Util {
@@ -59,13 +57,30 @@ public class Util {
 		return false;
 	}
 	
+	public static String getChar(ChatColor color) {
+		return color == null ? null : String.valueOf(color.getChar());
+	}
+	
+	public static boolean validChatFormat(String format) {
+		return format != null && format.contains("<player>") && format.contains("<msg>");
+	}
+	
+	public static String combine(String[] parts, int start) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = start; i < parts.length; i++) {
+			builder.append(parts[i]).append(" ");
+		}
+		return builder.toString().trim();
+	}
+	
 	// End utility methods
 	// Begin config methods
 	
 	public static boolean addToList(Config config, String path, String item) {
 		List<String> list = getList(config, path);
+		if (list.contains(item)) return false;
 		boolean s = list.add(item);
-		config.set(path, list);
+		config.set(path, new ArrayList<>(list));
 		return s;
 	}
 	
@@ -84,35 +99,39 @@ public class Util {
 		return new ArrayList<>();
 	}
 	
-	public static boolean verify(String key, String value) {
-		switch (key) {
-			case "nameColor":
-			case "chatColor":
+	public static boolean verify(Option option, String value) {
+		switch (option) {
+			case NAME_COLOR:
+			case CHAT_COLOR:
 				return ChatColor.getByChar(value).isColor();
-			case "nameFormat":
-			case "chatFormat":
+			case NAME_FORMAT:
+			case CHAT_FORMAT:
 				return ChatColor.getByChar(value).isFormat() || ChatColor.getByChar(value) == ChatColor.RESET;
+			case MESSAGE_FORMAT:
+				return validChatFormat(value) || value.equalsIgnoreCase(getConfigNull(option));
 			default:
 				return true;
 		}
 	}
 	
-	public static String getConfigNull(String key) {
-		switch (key) {
-			case "prefix":
+	public static String getConfigNull(Option option) {
+		switch (option) {
+			case PREFIX:
 				return getNone();
-			case "suffix":
+			case SUFFIX:
 				return getNone();
-			case "nameColor":
+			case MESSAGE_FORMAT:
+				return getNone();
+			case NAME_COLOR:
 				return "f";
-			case "nameFormat":
+			case NAME_FORMAT:
 				return "r";
-			case "chatColor":
+			case CHAT_COLOR:
 				return "f";
-			case "chatFormat":
+			case CHAT_FORMAT:
 				return "r";
 			default:
-				return null;
+				return getNone();
 		}
 	}
 	
@@ -144,6 +163,15 @@ public class Util {
 		return format;
 	}
 	
+	public static String getID(Config catalog, String name) {
+		for (String s : catalog.getConfig().getConfigurationSection("").getKeys(false)) {
+			if (catalog.getString(s).equalsIgnoreCase(name)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
 	// End config methods
 	// Start group methods
 	
@@ -165,12 +193,12 @@ public class Util {
 	}
 	
 	public static void loadOptions(Settings settings, Config config, String id) {
-		Settings.getAllOptions().forEach(s -> {
-			config.setDefault(id + ".options." + s, getConfigNull(s));
-			String v = config.getConfig().getString(id + ".options." + s);
-			if (!verify(s, v)) v = getConfigNull(s);
-			settings.unsafeSet(s, color(v));
-		});
+		for (Option option : Settings.getAllOptions()) {
+			config.setDefault(Option.getOptionPath(id, option), getConfigNull(option));
+			String v = config.getConfig().getString(Option.getOptionPath(id, option));
+			if (!verify(option, v)) v = getConfigNull(option);
+			if (settings != null) settings.unsafeSet(option, color(v));
+		}
 		config.save();
 	}
 	

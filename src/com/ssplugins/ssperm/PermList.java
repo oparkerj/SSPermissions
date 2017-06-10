@@ -5,10 +5,7 @@ import com.ssplugins.ssperm.callback.ListCallback;
 import com.ssplugins.ssperm.perm.Permissions;
 import com.ssplugins.ssperm.util.Util;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class PermList implements Permissions {
 
@@ -76,9 +73,12 @@ class PermList implements Permissions {
 	
 	@Override
 	public void set(List<String> perms) {
-		for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
+		for (Iterator<String> it = set.iterator(); it.hasNext();) {
 			String perm = it.next();
-			if (!perms.contains(perm)) remove(perm);
+			if (!perms.contains(perm)) {
+				Callback.handle(callback, perm, false);
+				it.remove();
+			}
 		}
 		perms.forEach(s -> {
 			if (contains(s)) return;

@@ -242,6 +242,5 @@ Examples with shorthand:
 Planned Updates
 ---
 These are things I plan to add in future updates:
-* BungeeCord support
 * Ability to set chat format per player/group
 * Ability to do stuff with players that are offline.

@@ -1,9 +1,11 @@
 package com.ssplugins.ssperm.callback;
 
+import com.ssplugins.ssperm.util.Option;
+
 public interface ChangeCallback {
 	
-	boolean onChange(String key, String oldValue, String newValue);
+	boolean onChange(Option option, String oldValue, String newValue);
 	
-	void afterChange(String name);
+	void afterChange(Option option, String oldValue, String newValue);
 	
 }

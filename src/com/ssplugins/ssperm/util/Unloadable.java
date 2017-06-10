@@ -2,10 +2,10 @@ package com.ssplugins.ssperm.util;
 
 import java.util.Optional;
 
-public interface Unloadable {
+public interface Unloadable<T> {
 	
 	boolean isLoaded();
 	
-	Optional<?> refresh();
+	Optional<T> refresh();
 	
 }

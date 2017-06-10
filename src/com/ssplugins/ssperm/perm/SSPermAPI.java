@@ -10,6 +10,8 @@ public interface SSPermAPI {
 	
 	boolean setChatFormat(String format);
 	
+	String getChatFormat(PlayerData data);
+	
 	ConfigReader getConfig();
 	
 	void reload();
