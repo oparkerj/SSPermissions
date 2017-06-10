@@ -27,4 +27,8 @@ public class SSPerm extends JavaPlugin {
 		return instance;
 	}
 	
+	public static void log(String msg) {
+		instance.getLogger().info(msg);
+	}
+	
 }

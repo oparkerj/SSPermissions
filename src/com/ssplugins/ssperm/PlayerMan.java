@@ -1,71 +1,59 @@
 package com.ssplugins.ssperm;
 
-import com.ssplugins.ssperm.perm.Permissions;
-import com.ssplugins.ssperm.perm.PlayerManager;
-import com.ssplugins.ssperm.perm.SSPlayer;
-import com.ssplugins.ssperm.perm.Settings;
+import com.ssplugins.ssperm.perm.*;
+import com.ssplugins.ssperm.util.Option;
 import com.ssplugins.ssperm.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
 class PlayerMan implements PlayerManager {
 	
-	private List<PermPlayer> players = new ArrayList<>();
+	private Map<String, PermPlayer> players = new HashMap<>();
 	
 	PlayerMan() {}
 	
 	void remove(Player player) {
-		players.removeIf(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString()));
+		PermPlayer p = players.remove(player.getUniqueId().toString());
+		if (p == null) return;
+		p.unload();
 	}
 	
 	void unloadPlayers() {
-		players.forEach(PermPlayer::unload);
+		players.forEach((s, permPlayer) -> permPlayer.unload());
 		players.clear();
 	}
 	
-	void reloadFormats() {
-		players.forEach(PermPlayer::refreshChatFormat);
-	}
-	
 	String getChatFormat(Player player) {
-		String base = Manager.getOptions().getConfig().getString("chatFormat");
-		base = Util.checkFormat(Util.color(base));
-		SSPlayer p = getPlayer(player);
-		Settings playerSettings = p.getSettings();
-		Settings groupSettings = p.getGroup().getSettings();
-		base = base.replace("<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
-		base = base.replace("<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
-		base = base.replace("<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
-		base = base.replace("<group>", p.getGroup().getName());
-		base = base.replace("<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
-		return base;
+		return getChatFormat(getPlayer(player));
 	}
 	
-	String getChatFormat(SSPlayer player) {
+	String getChatFormat(PlayerData data) {
 		String base = Manager.getOptions().getConfig().getString("chatFormat");
-		base = Util.checkFormat(Util.color(base));
-		Settings playerSettings = player.getSettings();
-		Settings groupSettings = player.getGroup().getSettings();
-		base = base.replace("<prefix>", Settings.pick("prefix", playerSettings.getPrefix(), groupSettings.getPrefix()));
-		base = base.replace("<player>", Settings.pick("nameColor", playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick("nameFormat", playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
-		base = base.replace("<suffix>", Settings.pick("suffix", playerSettings.getSuffix(), groupSettings.getSuffix()));
-		base = base.replace("<group>", player.getGroup().getName());
-		base = base.replace("<msg>", Settings.pick("chatColor", playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick("chatFormat", playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
-		return base;
+		String playerFormat = data.getChatFormat();
+		String groupFormat = data.getGroup().getMessageFormat();
+		String format = Settings.pickFormat(base, playerFormat, groupFormat);
+		format = Util.checkFormat(Util.color(format));
+		Settings playerSettings = data.getSettings();
+		Settings groupSettings = data.getGroup().getSettings();
+		format = format.replace("<prefix>", Settings.pick(Option.PREFIX, playerSettings.getPrefix(), groupSettings.getPrefix()));
+		format = format.replace("<player>", Settings.pick(Option.NAME_COLOR, playerSettings.getNameColor(), groupSettings.getNameColor()) + Settings.pick(Option.NAME_FORMAT, playerSettings.getNameFormat(), groupSettings.getNameFormat()) + "%1$s");
+		format = format.replace("<suffix>", Settings.pick(Option.SUFFIX, playerSettings.getSuffix(), groupSettings.getSuffix()));
+		format = format.replace("<group>", data.getGroup().getName());
+		format = format.replace("<msg>", Settings.pick(Option.CHAT_COLOR, playerSettings.getChatColor(), groupSettings.getChatColor()) + Settings.pick(Option.CHAT_FORMAT, playerSettings.getChatFormat(), groupSettings.getChatFormat()) + "%2$s");
+		return format;
 	}
 	
 	@Override
 	public SSPlayer getPlayer(Player player) {
-		if (players.stream().anyMatch(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString()))) {
-			Optional<PermPlayer> optional = players.stream().filter(permPlayer -> permPlayer.id().equalsIgnoreCase(player.getUniqueId().toString())).findFirst();
-			if (optional.isPresent()) return optional.get();
-		}
-		PermPlayer permPlayer = new PermPlayer(player);
-		permPlayer.setFormat(getChatFormat(permPlayer));
-		players.add(permPlayer);
-		return permPlayer;
+		return players.computeIfAbsent(player.getUniqueId().toString(), s -> new PermPlayer(player));
+	}
+	
+	@Override
+	public SSOfflinePlayer getOfflinePlayer(OfflinePlayer player) {
+		return new OffPlayer(player);
 	}
 	
 	@Override
@@ -80,6 +68,14 @@ class PlayerMan implements PlayerManager {
 		Player player = Bukkit.getPlayer(name);
 		if (player == null) return Optional.empty();
 		return Optional.of(getPlayer(player));
+	}
+	
+	@Override
+	public Optional<SSOfflinePlayer> getOfflinePlayerByName(String name) {
+		String id = Util.getID(Manager.getCatalog(), name);
+		if (id == null) return Optional.empty();
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(id));
+		return Optional.of(getOfflinePlayer(offlinePlayer));
 	}
 	
 	@Override

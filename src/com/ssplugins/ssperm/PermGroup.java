@@ -2,17 +2,15 @@ package com.ssplugins.ssperm;
 
 import com.ssplugins.ssperm.events.GroupModifyPermissionEvent;
 import com.ssplugins.ssperm.events.GroupOptionsUpdatedEvent;
-import com.ssplugins.ssperm.perm.Group;
-import com.ssplugins.ssperm.perm.Permissions;
-import com.ssplugins.ssperm.perm.SSPlayer;
-import com.ssplugins.ssperm.perm.Settings;
+import com.ssplugins.ssperm.events.PlayerMoveGroupEvent;
+import com.ssplugins.ssperm.perm.*;
+import com.ssplugins.ssperm.util.Option;
 import com.ssplugins.ssperm.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class PermGroup extends PermissionHolder implements Group {
@@ -27,7 +25,7 @@ class PermGroup extends PermissionHolder implements Group {
 		this.name = name;
 		manager = Manager.get();
 		super.setPermissionCallback(this::updatePermission);
-		super.setOptionCallback(this::refreshFormats);
+		super.setOptionCallback(this::optionUpdated);
 	}
 	
 	private void updatePermission(String perm, boolean add) {
@@ -37,26 +35,19 @@ class PermGroup extends PermissionHolder implements Group {
 					manager.getAttMan().playerUpdate(o.getUniqueId().toString(), perm, add);
 				}
 			});
-			return;
 		}
-		getPlayers().forEach(s -> {
-			manager.getAttMan().playerUpdate(s, perm, add);
-		});
+		else {
+			getPlayers().forEach(s -> manager.getAttMan().playerUpdate(s, perm, add));
+		}
 		Events.callEvent(new GroupModifyPermissionEvent(this, perm, add));
 	}
 	
-	private void refreshFormats(String option) {
-		getPlayers().forEach(s -> {
-			Optional<SSPlayer> optional = Manager.get().getPlayerManager().getPlayerById(s);
-			if (optional.isPresent()) {
-				optional.get().refreshChatFormat();
-			}
-		});
-		Events.callEvent(new GroupOptionsUpdatedEvent(this, option));
+	private void optionUpdated(Option option, String oldValue, String newValue) {
+		Events.callEvent(new GroupOptionsUpdatedEvent(this, option, oldValue, newValue));
 	}
 	
 	void removeSilent(Player player) {
-		Util.removeFromList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
+		Util.removeFromList(Manager.getGroups(), Option.getPlayersPath(name), player.getUniqueId().toString());
 	}
 	
 	void removeSection() {
@@ -65,6 +56,7 @@ class PermGroup extends PermissionHolder implements Group {
 	
 	void unload() {
 		loaded = false;
+		super.unloadCallbacks();
 	}
 
 	@Override
@@ -84,39 +76,86 @@ class PermGroup extends PermissionHolder implements Group {
 		if (!loaded) return null;
 		return getOptions();
 	}
-
+	
+	@Override
+	public String getMessageFormat() {
+		return getSettings().getMessageFormat();
+	}
+	
 	@Override
 	public List<String> getPlayers() {
 		if (!loaded) return null;
 		if (isDefault()) return Bukkit.getOnlinePlayers().stream().filter(player -> Manager.get().getPlayerManager().getPlayer(player).getGroup().isDefault()).map(player -> player.getUniqueId().toString()).collect(Collectors.toList());
-		return Manager.getGroups().getConfig().getStringList(name + ".players");
+		return Manager.getGroups().getConfig().getStringList(Option.getPlayersPath(name));
 	}
 
 	@Override
 	public boolean addPlayer(Player player) {
 		if (!loaded) return false;
 		if (hasPlayer(player)) return false;
+		SSPlayer ssp = manager.getPlayerMan().getPlayer(player);
+		Events.callEvent(new PlayerMoveGroupEvent(ssp, ssp.getGroup(), this));
 		manager.getGroupMan().resetPlayer(player);
-		if (!isDefault()) Util.addToList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
+		if (!isDefault()) Util.addToList(Manager.getGroups(), Option.getPlayersPath(name), player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, this);
-		manager.getPlayerManager().getPlayer(player).refreshChatFormat();
 		return true;
 	}
-
+	
+	@Override
+	public boolean addPlayer(OfflinePlayer player) {
+		if (!loaded) return false;
+		if (hasPlayer(player)) return false;
+		SSOfflinePlayer ssp = manager.getPlayerMan().getOfflinePlayer(player);
+		Events.callEvent(new PlayerMoveGroupEvent(ssp, ssp.getGroup(), this));
+		manager.getGroupMan().resetPlayer(player);
+		if (!isDefault()) Util.addToList(Manager.getGroups(), Option.getPlayersPath(name), player.getUniqueId().toString());
+		return true;
+	}
+	
+	@Override
+	public boolean addPlayer(PlayerData data) {
+		if (!loaded) return false;
+		if (hasPlayer(data.id())) return false;
+		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(data.id()));
+		if (!player.hasPlayedBefore()) return false;
+		SSOfflinePlayer ssp = manager.getPlayerMan().getOfflinePlayer(player);
+		Events.callEvent(new PlayerMoveGroupEvent(ssp, ssp.getGroup(), this));
+		data.leaveGroup();
+		if (!isDefault()) Util.addToList(Manager.getGroups(), Option.getPlayersPath(name), data.id());
+		return true;
+	}
+	
 	@Override
 	public boolean removePlayer(Player player) {
+		return removeFromGroup(player);
+	}
+	
+	@Override
+	public boolean removePlayer(OfflinePlayer player) {
+		return removeFromGroup(player);
+	}
+	
+	private boolean removeFromGroup(OfflinePlayer player) {
 		if (!loaded) return false;
 		if (!hasPlayer(player)) return false;
-		Util.removeFromList(Manager.getGroups(), name + ".players", player.getUniqueId().toString());
+		Util.removeFromList(Manager.getGroups(), Option.getPlayersPath(name), player.getUniqueId().toString());
 		manager.getAttMan().playerSet(player, manager.getGroupManager().getDefaultGroup());
-		manager.getPlayerManager().getPlayer(player).refreshChatFormat();
 		return true;
 	}
-
+	
 	@Override
 	public boolean hasPlayer(Player player) {
+		return hasPlayer(player.getUniqueId().toString());
+	}
+	
+	@Override
+	public boolean hasPlayer(OfflinePlayer player) {
+		return hasPlayer(player.getUniqueId().toString());
+	}
+	
+	private boolean hasPlayer(String id) {
 		if (!loaded) return false;
-		return getPlayers().contains(player.getUniqueId().toString());
+		return getPlayers().contains(id);
 	}
 	
 	@Override
@@ -130,12 +169,11 @@ class PermGroup extends PermissionHolder implements Group {
 	@Override
 	public List<Group> getInheritedGroups() {
 		if (!loaded) return null;
-		return Manager.getGroups().getConfig().getStringList(name + ".inherits").stream().map(s -> {
+		return Manager.getGroups().getConfig().getStringList(Option.getInheritsPath(name)).stream().map(s -> {
 			if (s.equalsIgnoreCase(Util.getNone())) return null;
 			Optional<Group> optional = manager.getGroupManager().getGroup(s);
-			if (optional.isPresent()) return optional.get();
-			else return null;
-		}).filter(group -> group != null).collect(Collectors.toList());
+			return optional.orElse(null);
+		}).filter(Objects::nonNull).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -147,9 +185,9 @@ class PermGroup extends PermissionHolder implements Group {
 	@Override
 	public boolean inherit(Group group) {
 		if (!loaded) return false;
-		if (Manager.getGroups().getConfig().getStringList(name + ".inherits").stream().anyMatch(s -> group.getName().equalsIgnoreCase(s))) return false;
+		if (Manager.getGroups().getConfig().getStringList(Option.getInheritsPath(name)).stream().anyMatch(s -> group.getName().equalsIgnoreCase(s))) return false;
 		if (group.getName().equalsIgnoreCase(name)) return false;
-		Util.addToList(Manager.getGroups(), name + ".inherits", group.getName());
+		Util.addToList(Manager.getGroups(), Option.getInheritsPath(name), group.getName());
 		getPlayers().forEach(s -> manager.getAttMan().playerSet(s, this));
 		return true;
 	}
@@ -157,7 +195,7 @@ class PermGroup extends PermissionHolder implements Group {
 	@Override
 	public boolean unInherit(String name) {
 		if (!loaded) return false;
-		boolean f = Util.removeFromList(Manager.getGroups(), this.name + ".inherits", name);
+		boolean f = Util.removeFromList(Manager.getGroups(), Option.getInheritsPath(this.name), name);
 		getPlayers().forEach(s -> manager.getAttMan().playerSet(s, this));
 		return f;
 	}

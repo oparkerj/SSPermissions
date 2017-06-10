@@ -46,7 +46,7 @@ How to Use
 ### Ingame CMDs
 /ssperm is the main command, with /ssp as an alias.  
 The format is `/ssp <section> <name> [<setting> <value>]`  
-I will reference the values in the angle brackets to explain the subcommands.  
+I will reference the names of those arguments to explain the subcommands.  
 For every section and action, you may just use the first letter of the word rather than typing the entire thing if you like.
 
 **Section**  
@@ -83,7 +83,7 @@ The starting point for all subcommands.
     </tr>
     <tr>
         <td>format</td>
-        <td>Change the chat format. You must include <code>&lt;player&gt;</code> and <code>&lt;msg&gt;</code> to update the format.</td>
+        <td>Change the global chat format. You must include <code>&lt;player&gt;</code> and <code>&lt;msg&gt;</code> to update the format.</td>
     </tr>
     <tr>
         <td>reload</td>
@@ -94,9 +94,11 @@ The starting point for all subcommands.
 Examples:  
 `/ssp group default` will show info for default group.  
 `/ssp create admin` will create a group named admin.  
+`/ssp player StarShadow` will show basic info for StarShadow.  
 Examples with shorthand:  
 `/ssp r mod` will remove the group named mod.  
-`/ssp l` will list all groups.
+`/ssp l` will list all groups.  
+`/ssp f <group> <player> -> <msg>` will update the chat format to show the group a player is in.
 
 **Group Actions**  
 Modify `<setting>` for group `<name>`
@@ -143,6 +145,11 @@ Modify `<setting>` for group `<name>`
         <td>Set the group suffix to <code>&lt;value&gt;</code> (<code>_</code> for space, <code>\_</code> for literal underscore, set to <code>{none}</code> for no suffix)</td>
     </tr>
     <tr>
+        <td>format</td>
+        <td>String</td>
+        <td>Set the chat format for this group. Must include <code>&lt;player&gt;</code> and <code>&lt;msg&gt;</code> to be valid.</td>
+    </tr>
+    <tr>
         <td>namecolor (nc)</td>
         <td>Any color code (a-f 0-9)</td>
         <td>Set the group namecolor to <code>&lt;value&gt;</code> (default: f)</td>
@@ -167,9 +174,11 @@ Modify `<setting>` for group `<name>`
 Examples:  
 `/ssp group default add bukkit.command.list` adds bukkit.command.list to default group.  
 `/ssp group default prefix &bUser_` sets the prefix for default group to User in aqua with a space after.  
+`/ssp group admin uninherit default` will have admin no longer inherit default group.  
 Examples with shorthand:  
 `/ssp g default nc e` sets the namecolor for players in this group to yellow.  
-`/ssp g mod i default` makes the group mod inherit the permissions of default.
+`/ssp g mod i default` makes the group mod inherit the permissions of default.  
+`/ssp g default r bukkit.command.plugins`  will remove bukkit.command.plugins from the default group.
 
 **Player Actions**  
 Modify `<setting>` for player `<name>` Player options (prefix, namecolor, etc.) will be used instead of group options if they are set.
@@ -211,6 +220,11 @@ Modify `<setting>` for player `<name>` Player options (prefix, namecolor, etc.) 
         <td>Set the player's suffix to <code>&lt;value&gt;</code> (<code>_</code> for space, <code>\_</code> for literal underscore, set to <code>{none}</code> for no suffix)</td>
     </tr>
     <tr>
+        <td>format</td>
+        <td>String</td>
+        <td>Set the chat format for this player. Must include <code>&lt;player&gt;</code> and <code>&lt;msg&gt;</code> to be valid.</td>
+    </tr>
+    <tr>
         <td>namecolor (nc)</td>
         <td>Any color code (a-f 0-9)</td>
         <td>Set the player's namecolor to <code>&lt;value&gt;</code> (default: f)</td>
@@ -235,13 +249,14 @@ Modify `<setting>` for player `<name>` Player options (prefix, namecolor, etc.) 
 Examples:  
 `/ssp player Steve add -bukkit.command.plugins` adds a negative permission to Steve (so he can't do /pl)  
 `/ssp player Steve move mod` moves Steve into mod group.  
+`/ssp player Steve suffix Level_5` will set Steve's suffix to "Level 5"  
 Examples with shorthand:  
 `/ssp p Steve nf l` sets Steve's nameformat to bold.  
-`/ssp p Steve cc a` sets Steve's chatcolor to green.
+`/ssp p Steve cc a` sets Steve's chatcolor to green.  
+`/ssp p Steve p Friends` sets Steve's prefix to "Friends"
 
 Planned Updates
 ---
 These are things I plan to add in future updates:
-* BungeeCord support
-* Ability to set chat format per player/group
-* Ability to do stuff with players that are offline.
+* ~~Ability to set chat format per player/group~~ (Added in version 2.0.0)
+* ~~Ability to do stuff with players that are offline.~~ (Added in version 2.0.0)

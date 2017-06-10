@@ -2,11 +2,11 @@ package com.ssplugins.ssperm.cmd;
 
 import com.ssplugins.ssperm.Perms;
 import com.ssplugins.ssperm.SSPerm;
-import com.ssplugins.ssperm.perm.Group;
-import com.ssplugins.ssperm.perm.GroupManager;
-import com.ssplugins.ssperm.perm.SSPlayer;
+import com.ssplugins.ssperm.perm.*;
 import com.ssplugins.ssperm.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class MainCommand implements CommandExecutor {
 	
@@ -31,6 +32,11 @@ public class MainCommand implements CommandExecutor {
 		}
 	}
 	
+	private void msg(String id, String msg) {
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(id));
+		if (offlinePlayer.isOnline()) msg(offlinePlayer.getPlayer(), msg);
+	}
+	
 	private String[] getHelp(CommandSender sender) {
 		List<String> list = new ArrayList<>();
 		boolean manage = sender.hasPermission(Perms.MANAGE);
@@ -43,7 +49,7 @@ public class MainCommand implements CommandExecutor {
 		if (sender.hasPermission(Perms.ADMIN) || all) {
 			list.add("&b/ssp create <name> &a- &7Create a group.");
 			list.add("&b/ssp remove <name> &a- &7Remove a group.");
-			list.add("&b/ssp format <format> &a- &7Change the chat format.");
+			list.add("&b/ssp format <format> &a- &7Change the global chat format.");
 		}
 		if (list.isEmpty()) list.add("&cYou do not have permission to use this command.");
 		return list.toArray(new String[0]);
@@ -135,6 +141,7 @@ public class MainCommand implements CommandExecutor {
 					"&auninherit (u) &e- &7Remove inherited permissions for a group",
 					"&aprefix (p) &e- &7Set the prefix for the group",
 					"&asuffix (s) &e- &7Set the suffix for the group",
+					"&aformat (f) &e- &7Set the chat format for the group",
 					"&anamecolor (nc) &e- &7Set the name color of players in the group",
 					"&anameformat (nf) &e- &7Set the name format of players in the group",
 					"&achatcolor (cc) &e- &7Set the chat color of players in the group",
@@ -189,7 +196,6 @@ public class MainCommand implements CommandExecutor {
 			}
 			else if (args[2].equalsIgnoreCase("prefix") || args[2].equalsIgnoreCase("p")) {
 				args[3] = args[3].replaceAll("(\\\\_)", String.valueOf(ChatColor.COLOR_CHAR)).replaceAll("_", " ").replaceAll(String.valueOf(ChatColor.COLOR_CHAR), "_");
-				
 				if (!group.getSettings().setPrefix(args[3])) {
 					msg(sender, "&eUnable to set group prefix.");
 				}
@@ -204,6 +210,17 @@ public class MainCommand implements CommandExecutor {
 				}
 				else {
 					msg(sender, "&aGroup &b" + group.getName() + " &asuffix set to &e" + args[3] + "&a.");
+				}
+			}
+			else if (args[2].equalsIgnoreCase("format") || args[2].equalsIgnoreCase("f")) {
+				String[] trim = new String[args.length - 3];
+				System.arraycopy(args, 3, trim, 0, trim.length);
+				String format = String.join(" ", trim);
+				if (!group.getSettings().setMessageFormat(format)) {
+					msg(sender, "&eFormat must contain at least <player> and <msg> variables.");
+				}
+				else {
+					msg(sender, "&aChat format for &b" + group.getName() + " &aupdated to &f" + Util.color(format));
 				}
 			}
 			else if (args[2].equalsIgnoreCase("namecolor") || args[2].equalsIgnoreCase("nc")) {
@@ -279,20 +296,32 @@ public class MainCommand implements CommandExecutor {
 			return;
 		}
 		if (args.length == 2) {
+			PlayerData data;
+			String player;
 			Optional<SSPlayer> optional = SSPerm.getAPI().getPlayerManager().getPlayerByName(args[1]);
 			if (!optional.isPresent()) {
-				msg(sender, "&ePlayer not found.");
-				return;
+				Optional<SSOfflinePlayer> op = SSPerm.getAPI().getPlayerManager().getOfflinePlayerByName(args[1]);
+				if (!op.isPresent()) {
+					msg(sender, "&ePlayer not found.");
+					return;
+				}
+				else {
+					data = op.get();
+					player = args[1];
+				}
 			}
-			SSPlayer player = optional.get();
-			msg(sender, "&7Name: &b" + player.getPlayer().getName());
-			msg(sender, "&7Group: &d" + player.getGroup().getName());
-			if (player.getPermissions().length() == 0) {
+			else {
+				data = optional.get();
+				player = optional.get().getPlayer().getName();
+			}
+			msg(sender, "&7Name: &b" + player);
+			msg(sender, "&7Group: &d" + data.getGroup().getName());
+			if (data.getPermissions().length() == 0) {
 				msg(sender, "&7Permissions: &aNone");
 			}
 			else {
 				msg(sender, "&7Permissions:");
-				player.getPermissions().getAll().forEach(s -> msg(sender, (s.startsWith("-") ? "&c" : "&a") + "- " + s));
+				data.getPermissions().getAll().forEach(s -> msg(sender, (s.startsWith("-") ? "&c" : "&a") + "- " + s));
 			}
 		}
 		else if (args.length < 4) {
@@ -312,26 +341,38 @@ public class MainCommand implements CommandExecutor {
 			msg(sender, help);
 		}
 		else {
+			PlayerData data;
+			String player;
 			Optional<SSPlayer> optional = SSPerm.getAPI().getPlayerManager().getPlayerByName(args[1]);
 			if (!optional.isPresent()) {
-				msg(sender, "&ePlayer not found.");
-				return;
+				Optional<SSOfflinePlayer> op = SSPerm.getAPI().getPlayerManager().getOfflinePlayerByName(args[1]);
+				if (!op.isPresent()) {
+					msg(sender, "&ePlayer not found.");
+					return;
+				}
+				else {
+					data = op.get();
+					player = args[1];
+				}
 			}
-			SSPlayer player = optional.get();
+			else {
+				data = optional.get();
+				player = optional.get().getPlayer().getName();
+			}
 			if (args[2].equalsIgnoreCase("add") || args[2].equalsIgnoreCase("a")) {
-				if (!player.getPermissions().add(args[3])) {
+				if (!data.getPermissions().add(args[3])) {
 					msg(sender, "&ePlayer already has permission.");
 				}
 				else {
-					msg(sender, "&aAdded &e" + args[3] + " &ato &b" + player.getPlayer().getName() + "&a.");
+					msg(sender, "&aAdded &e" + args[3] + " &ato &b" + player + "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("remove") || args[2].equalsIgnoreCase("r")) {
-				if (!player.getPermissions().remove(args[3])) {
+				if (!data.getPermissions().remove(args[3])) {
 					msg(sender, "&ePlayer does not have permission.");
 				}
 				else {
-					msg(sender, "&aRemoved &e" + args[3] + " &afrom player &b" + player.getPlayer().getName() + "&a.");
+					msg(sender, "&aRemoved &e" + args[3] + " &afrom player &b" + player + "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("move") || args[2].equalsIgnoreCase("m")) {
@@ -341,30 +382,41 @@ public class MainCommand implements CommandExecutor {
 					return;
 				}
 				Group g = o.get();
-				if (!g.addPlayer(player.getPlayer())) {
-					msg(sender, "&b" + player.getPlayer().getName() + " &eis already in &b" + g.getName() + "&e.");
+				if (!g.addPlayer(data)) {
+					msg(sender, "&b" + player + " &eis already in &b" + g.getName() + "&e.");
 				}
 				else {
-					if (SSPerm.getAPI().getConfig().getBoolean("msgPlayerWhenMoved")) msg(player.getPlayer(), "&eYou were moved to group &b" + g.getName() + "&e.");
-					msg(sender, "&b" + player.getPlayer().getName() + " &awas moved to &b" + g.getName() + "&a.");
+					if (SSPerm.getAPI().getConfig().getBoolean("msgPlayerWhenMoved")) msg(data.id(), "&eYou were moved to group &b" + g.getName() + "&e.");
+					msg(sender, "&b" + player + " &awas moved to &b" + g.getName() + "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("prefix") || args[2].equalsIgnoreCase("p")) {
 				args[3] = args[3].replaceAll("(\\\\_)", String.valueOf(ChatColor.COLOR_CHAR)).replaceAll("_", " ").replaceAll(String.valueOf(ChatColor.COLOR_CHAR), "_");
-				if (!player.getSettings().setPrefix(args[3])) {
+				if (!data.getSettings().setPrefix(args[3])) {
 					msg(sender, "&eUnable to set player prefix.");
 				}
 				else {
-					msg(sender, "&b" + player.getPlayer().getName() + "'s &aprefix set to &e" + args[3] + "&a.");
+					msg(sender, "&b" + player + "'s &aprefix set to &e" + args[3] + "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("suffix") || args[2].equalsIgnoreCase("s")) {
 				args[3] = args[3].replaceAll("(\\\\_)", String.valueOf(ChatColor.COLOR_CHAR)).replaceAll("_", " ").replaceAll(String.valueOf(ChatColor.COLOR_CHAR), "_");
-				if (!player.getSettings().setSuffix(args[3])) {
+				if (!data.getSettings().setSuffix(args[3])) {
 					msg(sender, "&eUnable to set player suffix.");
 				}
 				else {
-					msg(sender, "&b" + player.getPlayer().getName() + "'s &asuffix set to &e" + args[3] + "&a.");
+					msg(sender, "&b" + player + "'s &asuffix set to &e" + args[3] + "&a.");
+				}
+			}
+			else if (args[2].equalsIgnoreCase("format") || args[2].equalsIgnoreCase("f")) {
+				String[] trim = new String[args.length - 3];
+				System.arraycopy(args, 3, trim, 0, trim.length);
+				String format = String.join(" ", trim);
+				if (!data.getSettings().setMessageFormat(format)) {
+					msg(sender, "&eFormat must contain at least <player> and <msg> variables.");
+				}
+				else {
+					msg(sender, "&aChat format for &b" + player + " &aupdated to &f" + Util.color(format));
 				}
 			}
 			else if (args[2].equalsIgnoreCase("namecolor") || args[2].equalsIgnoreCase("nc")) {
@@ -375,11 +427,11 @@ public class MainCommand implements CommandExecutor {
 					return;
 				}
 				ChatColor c = ChatColor.getByChar(f);
-				if (!player.getSettings().setNameColor(c)) {
+				if (!data.getSettings().setNameColor(c)) {
 					msg(sender, "&b" + c.name() + " &eis not a color.");
 				}
 				else {
-					msg(sender, "&aSet &b" + player.getPlayer().getName() + "'s &anamecolor to &e" + c.name()+ "&a.");
+					msg(sender, "&aSet &b" + player + "'s &anamecolor to &e" + c.name()+ "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("nameformat") || args[2].equalsIgnoreCase("nf")) {
@@ -390,11 +442,11 @@ public class MainCommand implements CommandExecutor {
 					return;
 				}
 				ChatColor c = ChatColor.getByChar(f);
-				if (!player.getSettings().setNameFormat(c)) {
+				if (!data.getSettings().setNameFormat(c)) {
 					msg(sender, "&b" + c.name() + " &eis not a format.");
 				}
 				else {
-					msg(sender, "&aSet &b" + player.getPlayer().getName() + "'s &anameformat to &e" + c.name()+ "&a.");
+					msg(sender, "&aSet &b" + player + "'s &anameformat to &e" + c.name()+ "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("chatcolor") || args[2].equalsIgnoreCase("cc")) {
@@ -405,11 +457,11 @@ public class MainCommand implements CommandExecutor {
 					return;
 				}
 				ChatColor c = ChatColor.getByChar(f);
-				if (!player.getSettings().setChatColor(c)) {
+				if (!data.getSettings().setChatColor(c)) {
 					msg(sender, "&b" + c.name() + " &eis not a color.");
 				}
 				else {
-					msg(sender, "&aSet &b" + player.getPlayer().getName() + "'s &achatcolor to &e" + c.name()+ "&a.");
+					msg(sender, "&aSet &b" + player + "'s &achatcolor to &e" + c.name()+ "&a.");
 				}
 			}
 			else if (args[2].equalsIgnoreCase("chatformat") || args[2].equalsIgnoreCase("cf")) {
@@ -420,11 +472,11 @@ public class MainCommand implements CommandExecutor {
 					return;
 				}
 				ChatColor c = ChatColor.getByChar(f);
-				if (!player.getSettings().setChatFormat(c)) {
+				if (!data.getSettings().setChatFormat(c)) {
 					msg(sender, "&b" + c.name() + " &eis not a format.");
 				}
 				else {
-					msg(sender, "&aSet &b" + player.getPlayer().getName() + "'s &achatformat to &e" + c.name()+ "&a.");
+					msg(sender, "&aSet &b" + player + "'s &achatformat to &e" + c.name()+ "&a.");
 				}
 			}
 			else {
@@ -494,7 +546,7 @@ public class MainCommand implements CommandExecutor {
 				msg(sender, "&eFormat must contain at least <player> and <msg> variables.");
 				return;
 			}
-			msg(sender, "&bChat format updated to &a" + format);
+			msg(sender, "&aChat format updated to &a" + Util.color(format));
 		}
 	}
 	

@@ -6,13 +6,13 @@ import com.ssplugins.ssperm.perm.Group;
 import com.ssplugins.ssperm.perm.GroupManager;
 import com.ssplugins.ssperm.perm.SSPlayer;
 import com.ssplugins.ssperm.util.Util;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 class GroupMan implements GroupManager {
 	
@@ -33,6 +33,10 @@ class GroupMan implements GroupManager {
 	
 	void resetPlayer(Player player) {
 		Manager.get().getPlayerManager().getPlayer(player).getGroup().removePlayer(player);
+	}
+	
+	void resetPlayer(OfflinePlayer player) {
+		Manager.get().getPlayerManager().getOfflinePlayer(player).getGroup().removePlayer(player);
 	}
 	
 	void unloadGroups() {
@@ -63,7 +67,7 @@ class GroupMan implements GroupManager {
 		it.forEachRemaining(permGroup -> {
 			permGroup.getPlayers().forEach(s -> {
 				Optional<SSPlayer> optional = Manager.get().getPlayerMan().getPlayerById(s);
-				if (optional.isPresent()) defGroup.addPlayer(optional.get().getPlayer());
+				optional.ifPresent(ssPlayer -> defGroup.addPlayer(ssPlayer.getPlayer()));
 			});
 			if (groups.removeIf(permGroup1 -> permGroup1.getName().equalsIgnoreCase(name))) {
 				Manager.getGroups().removeSection(permGroup.getName());
@@ -82,13 +86,13 @@ class GroupMan implements GroupManager {
 	public Optional<Group> getGroup(String name) {
 		if (name.equalsIgnoreCase("default")) return Optional.of(defGroup);
 		Optional<PermGroup> optional = groups.stream().filter(permGroup -> permGroup.getName().equalsIgnoreCase(name)).findFirst();
-		if (optional.isPresent()) return Optional.of(optional.get());
+		if (optional.isPresent()) return optional.map(permGroup -> permGroup);
 		else return Optional.empty();
 	}
 	
 	@Override
 	public List<Group> getGroups() {
-		return groups.stream().collect(Collectors.toList());
+		return new ArrayList<>(groups);
 	}
 	
 	@Override

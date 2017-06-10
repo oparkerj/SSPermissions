@@ -1,12 +1,13 @@
 package com.ssplugins.ssperm.perm;
 
 import com.ssplugins.ssperm.util.Unloadable;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
 
-public interface Group extends Unloadable {
+public interface Group extends Unloadable<Group> {
 
 	String getName();
 
@@ -15,6 +16,8 @@ public interface Group extends Unloadable {
 	Set<String> getAllPermissions();
 
 	Settings getSettings();
+	
+	String getMessageFormat();
 	
 	List<Group> getInheritedGroups();
 	
@@ -27,10 +30,18 @@ public interface Group extends Unloadable {
 	List<String> getPlayers();
 
 	boolean addPlayer(Player player);
+	
+	boolean addPlayer(OfflinePlayer player);
+	
+	boolean addPlayer(PlayerData data);
 
 	boolean removePlayer(Player player);
+	
+	boolean removePlayer(OfflinePlayer player);
 
 	boolean hasPlayer(Player player);
+	
+	boolean hasPlayer(OfflinePlayer player);
 	
 	boolean isDefault();
 
