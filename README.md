@@ -1,4 +1,4 @@
-# SSPerm
+# SS-Permissions
 Basic permissions plugins with developers in mind.
 
 I created this permissions plugin simply because I wanted to, not because of any request.
