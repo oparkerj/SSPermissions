@@ -1,12 +1,8 @@
-# SS-Permissions
+# SSPermissions
 Basic permissions plugins with developers in mind.
 
-I created this permissions plugin simply because I wanted to, not because of any request.
-It came out great and I will probably use this rather than any other plugin if I ever decide to make a server.
-
----
-While making this plugin I mainly focused on the developer side, meaning hooking into the plugin and managing everything is extremely simple.  
-You have `SSPerm.getAPI()` to get started, and from there you can get the `GroupManager` or `PlayerManager` to manage all aspects of the plugin.
+Developers in mind means that hooking into the plugin is extremely simple.  
+You have `SSPermissions.getAPI()` to get started, and from there you can get the `GroupManager` or `PlayerManager` to manage all aspects of the plugin.
 
 How to Use
 ---
@@ -18,36 +14,36 @@ How to Use
         <td><b>Description</b></td>
     </tr>
     <tr>
-        <td>ssperm.*</td>
+        <td>ssp.*</td>
         <td>Permission for everything.</td>
     </tr>
     <tr>
-        <td>ssperm.manage</td>
+        <td>ssp.manage</td>
         <td>Permission to manage players and groups. (Does not give .admin or .reload)</td>
     </tr>
     <tr>
-        <td>ssperm.manage.admin</td>
+        <td>ssp.manage.admin</td>
         <td>Permission to create/remove groups.</td>
     </tr>
     <tr>
-        <td>ssperm.manage.reload</td>
+        <td>ssp.manage.reload</td>
         <td>Permission to reload the plugin.</td>
     </tr>
     <tr>
-        <td>ssperm.manage.groups</td>
+        <td>ssp.manage.groups</td>
         <td>Permission to manage groups.</td>
     </tr>
     <tr>
-        <td>ssperm.manage.players</td>
+        <td>ssp.manage.players</td>
         <td>Permission to manage players.</td>
     </tr>
 </table>
 
 ### Ingame CMDs
-/ssperm is the main command, with /ssp as an alias.  
+/ssp is the main command   
 The format is `/ssp <section> <name> [<setting> <value>]`  
-I will reference the names of those arguments to explain the subcommands.  
-For every section and action, you may just use the first letter of the word rather than typing the entire thing if you like.
+I will use the names of the words in angle brackets to explain the commands.  
+For every section and setting, you may just use the first letter of the word rather than typing the entire thing if you like.
 
 **Section**  
 The starting point for all subcommands.

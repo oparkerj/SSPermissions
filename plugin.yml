@@ -1,11 +1,11 @@
-name: SSPerm
-main: com.ssplugins.ssperm.SSPerm
+name: SSPermissions
+main: com.ssplugins.ssp.SSPermissions
 version: 2.0.0
 
 author: StarShadow
 
 commands:
-  ssperm:
+  sspermissions:
     description: Manage players and groups.
     aliases: [ssp]
     usage: /ssp <args>
