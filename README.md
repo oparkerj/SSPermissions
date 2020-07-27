@@ -1,9 +1,9 @@
 # SSPermissions
-This project is abandoned. (Lightweight system to give permissions to players)  
+This project is abandoned. There are much better alternatives out there, this project was mainly to gain experience making a custom permission framework.  
 
-Basic permissions plugins with developers in mind.
+Basic and lightweight permissions plugin with developers in mind.
 
-Developers in mind means that the plugin offers a simple API for managing permissions.  
+This plugin was targeted towards developers by offering a simple API to manage server permissions.  
 You have `SSPermissions.getAPI()` to get started, and from there you can get the `GroupManager` or `PlayerManager` to manage all aspects of the plugin.
 
 How to Use
